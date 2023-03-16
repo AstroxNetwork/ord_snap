@@ -1,0 +1,44 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "target": "es2017",
+      "lib": ["es2017","dom"],
+      "allowSyntheticDefaultImports": true,
+      "composite": true,
+      "declarationMap": true,
+      "downlevelIteration": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "node",
+      "module": "commonjs",
+      "pretty": true,
+      "sourceMap": true,
+      "declaration": true,
+      "outDir": "build",
+      "allowJs": true,
+      "noEmit": false,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "skipLibCheck": true,
+      "importHelpers": true,
+      "baseUrl": "scripts",
+      "paths": {
+        "@canisters":["packages/canisters/*"]
+      },
+      "typeRoots": [
+        "./node_modules/@types",
+        "./@types"
+      ]
+    },
+    "references": [
+      { "path": "packages/types" },
+      { "path": "packages/snap" },
+      { "path": "packages/adapter" },
+    ],
+    "exclude": [
+      "packages/example/vite.config.ts",
+      "packages/example/tsconfig.json",
+    ]
+  }
+  

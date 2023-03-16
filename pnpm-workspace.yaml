@@ -1,0 +1,4 @@
+packages:
+  - 'packages/adapter'
+  - 'packages/snap'
+  - 'packages/types'

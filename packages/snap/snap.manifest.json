@@ -1,0 +1,32 @@
+{
+  "version": "0.0.1",
+  "proposedName": "OrdSnap",
+  "description": "The ord snap.",
+  "source": {
+    "shasum": "oWJiVj22weqs8147HHuE6zqPwNe7KI68JqGJ27c0daw=",
+    "location": {
+      "npm": {
+        "filePath": "dist/bundle.js",
+        "packageName": "@astrox/ord-snap",
+        "registry": "https://registry.npmjs.org/"
+      }
+    }
+  },
+  "initialPermissions": {
+    "endowment:network-access": {},
+    "snap_confirm": {},
+    "snap_getBip44Entropy": [
+      {
+        "coinType": 1
+      },
+      {
+        "coinType": 0
+      },
+      {
+        "coinType": 1237
+      }
+    ],
+    "snap_manageState": {}
+  },
+  "manifestVersion": "0.1"
+}

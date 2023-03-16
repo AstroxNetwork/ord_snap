@@ -1,0 +1,30 @@
+{
+  "name": "root",
+  "private": true,
+  "author": "AstroX <dev@astrox.network>",
+  "license": "(Apache-2.0 AND MIT)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build:snap": "lerna run build --scope @astrox/ord-snap",
+    "build:types": "cd packages/types && tsc -b tsconfig.json",
+    "build:adapter": "cd packages/adapter && tsc -b tsconfig.json",
+    "build:example": "cd packages/example && rm -rf node_modules && pnpm install",
+    "clean": "./scripts/clean.sh",
+    "build:all": "pnpm run clean && pnpm run build:types && pnpm run build:snap && pnpm run build:adapter && pnpm run build:example",
+    "start:snap": "lerna run serve --scope @astrox/ord-snap",
+    "start:example:local": "cd packages/example && pnpm run run dev",
+    "start:example:production": "cd packages/example && pnpm run run dev",
+    "bootstrap": "lerna bootstrap",
+    "demo:local": "concurrently  --raw --kill-others \"pnpm run run start:snap\" \"pnpm run run start:example:local\""
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  },
+  "dependencies": {
+    "@types/node": "^18.0.0",
+    "concurrently": "^7.1.0",
+    "tslib": "^2.3.1"
+  }
+}

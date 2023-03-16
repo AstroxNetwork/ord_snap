@@ -1,0 +1,32 @@
+{
+  "name": "@astrox/ord-snap-adapter",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "types": "build/index.d.ts",
+  "author": "AstroX <dev@astrox.network>",
+  "license": "(Apache-2.0 AND MIT)",
+  "private": false,
+  "homepage": "https://github.com/AstroxNetwork",
+  "keywords": [
+    "metamask",
+    "snap",
+    "dapp"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Adapter for installing ICSnap",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "@astrox/ord-snap-types": "^0.0.1",
+    "@dfinity/agent": "^0.15.4",
+    "@dfinity/candid": "^0.15.4",
+    "@dfinity/identity": "^0.15.4",
+    "@dfinity/identity-secp256k1": "^0.15.4",
+    "@dfinity/principal": "^0.15.4"
+  },
+  "gitHead": "f168ac561460b3b536e170842d4ba40f344d630e"
+}

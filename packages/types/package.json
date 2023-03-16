@@ -1,0 +1,31 @@
+{
+  "name": "@astrox/ord-snap-types",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "types": "build/index.d.ts",
+  "author": "AstroX <dev@astrox.network>",
+  "license": "(Apache-2.0 AND MIT)",
+  "private": false,
+  "homepage": "https://github.com/AstroxNetwork",
+  "keywords": [
+    "dfinity",
+    "ic",
+    "icp",
+    "metamask",
+    "snap",
+    "dapp"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Adapter for installing ICSnap",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "gitHead": "f168ac561460b3b536e170842d4ba40f344d630e",
+  "dependencies": {
+    "@dfinity/identity-secp256k1": "^0.15.4",
+    "@dfinity/principal": "^0.15.4"
+  }
+}
