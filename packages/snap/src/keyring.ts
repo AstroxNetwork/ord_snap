@@ -1,4 +1,3 @@
-import { Wallet } from '@astrox/ord-snap-types';
 import * as bitcoin from 'bitcoinjs-lib';
 
 import { isTaprootInput } from 'bitcoinjs-lib/src/psbt/bip371';
