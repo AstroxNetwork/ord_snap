@@ -11,7 +11,6 @@ import { MetamaskOrdSnap } from './snap';
 import { Signature } from '@dfinity/agent';
 
 async function sendSnapMethod<T>(request: MetamaskOrdRpcRequest, snapId: string): Promise<T> {
-  console.log({ request, snapId });
   return await window.ethereum.request({
     method: 'wallet_invokeSnap',
     params: {
@@ -49,6 +48,6 @@ export async function getRawPublicKey(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Schnorr_getRawPublicKey' }, this.snapId);
 }
 
-export async function initKeyRing(this: MetamaskOrdSnap): Promise<boolean> {
+export async function initKeyRing(this: MetamaskOrdSnap): Promise<string[]> {
   return await sendSnapMethod({ method: 'Ord_initKeyRing' }, this.snapId);
 }

@@ -74,12 +74,21 @@ export function Intro() {
     setMessageDecrypted(JSON.stringify(encrypted))
   }
 
+  const initKeyRing = async () => {
+    console.log(snapIdentity.api)
+    const kr = await snapIdentity.api.initKeyRing()
+    console.log(kr)
+  }
+
   useEffect(() => {
-    if (!snapIdentity) {
-      installSnap()
-    } else {
-      getPublicKey()
-    }
+    ;(async () => {
+      if (!snapIdentity) {
+        await installSnap()
+      } else {
+        await getPublicKey()
+        await initKeyRing()
+      }
+    })()
   }, [snapIdentity])
   return (
     <>

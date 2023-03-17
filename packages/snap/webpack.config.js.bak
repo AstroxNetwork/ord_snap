@@ -1,0 +1,94 @@
+const SnapsWebpackPlugin = require('@metamask/snaps-webpack-plugin/dist/index').default;
+const WasmModuleWebpackPlugin = require('wasm-module-webpack-plugin');
+
+const { URL } = require('url');
+const webpack = require('webpack');
+const path = require('path');
+const fs = require('fs');
+const appRoot = fs.realpathSync(process.cwd());
+const rootResolve = path.resolve.bind(path, appRoot);
+
+const options = {
+  /**
+   * Whether to strip all comments from the bundle.
+   */
+  stripComments: true,
+
+  /**
+   * Whether to evaluate the bundle with SES, to ensure SES compatibility.
+   */
+  eval: true,
+
+  /**
+   * The path to the Snap manifest file. If set, it will be checked and automatically updated with
+   * the bundle's hash, if `writeManifest` is enabled. Defaults to `snap/manifest.json` in the
+   * current working directory.
+   */
+  manifestPath: './snap.manifest.json',
+
+  /**
+   * Whether to write the updated Snap manifest file to disk. If `manifestPath` is not set, this
+   * option has no effect. If this is disabled, an error will be thrown if the manifest file is
+   * invalid.
+   */
+  writeManifest: true,
+};
+
+module.exports = {
+  mode: process.env.NODE_ENV || 'development',
+  entry: './build/src/index.js',
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+      {
+        oneOf: [
+          {
+            test: /\.m?js$/,
+            include: [path.join(rootResolve('node_modules'), 'tiny-secp256k1-browserify')],
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env'],
+                plugins: [
+                  '@babel/plugin-syntax-dynamic-import',
+                  // '@babel/plugin-transform-runtime', // do not use with this plugin
+                  WasmModuleWebpackPlugin.BabelPlugin,
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  output: {
+    filename: 'bundle.js',
+    // path: new URL('dist').pathname,
+  },
+
+  experiments: {
+    asyncWebAssembly: true,
+  },
+  plugins: [
+    // new webpack.ProvidePlugin({
+    //   process: 'process/browser.js',
+    // }),
+
+    // new SnapsWebpackPlugin(options),
+    new WasmModuleWebpackPlugin.WebpackPlugin(),
+  ],
+  resolve: {
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      // buffer: require.resolve('buffer/')
+    },
+    extensions: ['.js', 'jsx', '.ts', '.tsx'],
+  },
+};

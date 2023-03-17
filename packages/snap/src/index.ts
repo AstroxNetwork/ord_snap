@@ -26,7 +26,6 @@ export const EmptyMetamaskState: () => MetamaskState = () => ({
 });
 
 export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
-  console.log(snap);
   // console.log({ request });
   // console.log('asdfasdfasd');
   // let snap: SnapsGlobalObject;
@@ -74,7 +73,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
     case 'Ord_initKeyRing': {
       const kr = await OrdKeyring.fromIndex(snap, 0);
       // await kr.addAccounts(1);
-      return true;
+      return kr.getAccounts();
     }
     default:
       throw new Error('Unsupported RPC method');
