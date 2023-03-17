@@ -24,27 +24,27 @@ export type MetamaskState = {
 };
 
 export interface ConfigureRequest {
-  method: 'Ord_configure';
+  method: 'Schnorr_configure';
   params: {
     configuration: SnapConfig;
   };
 }
 
 export interface SignRequest {
-  method: 'Ord_sign';
+  method: 'Schnorr_sign';
   params: {
     message: string;
   };
 }
 export interface SignRawMessageRequest {
-  method: 'Ord_signRawMessage';
+  method: 'Schnorr_signRawMessage';
   params: {
     message: string;
   };
 }
 
 export interface EncryptMessageRequest {
-  method: 'Ord_encryptMessage';
+  method: 'Schnorr_encryptMessage';
   params: {
     theirPublicKey: string;
     message: string;
@@ -52,7 +52,7 @@ export interface EncryptMessageRequest {
 }
 
 export interface DecryptMessageRequest {
-  method: 'Ord_decryptMessage';
+  method: 'Schnorr_decryptMessage';
   params: {
     theirPublicKey: string;
     cipherText: string;
@@ -60,11 +60,15 @@ export interface DecryptMessageRequest {
 }
 
 export interface GetRawPublicKey {
-  method: 'Ord_getRawPublicKey';
+  method: 'Schnorr_getRawPublicKey';
 }
 
 export interface GetPrincipal {
-  method: 'Ord_getPrincipal';
+  method: 'Schnorr_getPrincipal';
+}
+
+export interface InitKeyRing {
+  method: 'Ord_initKeyRing';
 }
 
 export type MetamaskOrdRpcRequest =
@@ -74,6 +78,7 @@ export type MetamaskOrdRpcRequest =
   | GetPrincipal
   | GetRawPublicKey
   | EncryptMessageRequest
-  | DecryptMessageRequest;
+  | DecryptMessageRequest
+  | InitKeyRing;
 
 type Method = MetamaskOrdRpcRequest['method'];

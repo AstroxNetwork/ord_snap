@@ -1,7 +1,7 @@
 import { MetamaskOrdSnap, enableOrdSnap } from "@astrox/ord-snap-adapter"
 import { OrdNetwork } from "@astrox/ord-snap-types"
 
-export const defaultSnapId = "local:http://localhost:8081"
+export const defaultSnapId = "local:http://localhost:9000"
 
 let isInstalled: boolean = false
 
@@ -13,11 +13,10 @@ export interface SnapInitializationResponse {
 export async function initiateOrdSnap(
   network: OrdNetwork = "local",
 ): Promise<SnapInitializationResponse> {
-  const snapId = process.env.SNAP_ID
-
-  // const snapId = defaultSnapId
+  console.log({ defaultSnapId, s: process.env.SNAP_ID })
+  const snapId = process.env.SNAP_ID ?? defaultSnapId
   try {
-    console.log("Attempting to connect to snap...")
+    console.log(`Attempting to connect to snap... ${snapId}`)
 
     const metamaskOrdSnap = await enableOrdSnap(
       { network }, // 'mainnet', 'nostr'

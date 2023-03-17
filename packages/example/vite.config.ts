@@ -94,7 +94,7 @@ export default defineConfig({
       isDev ? "development" : "production",
     ),
     "process.env.SNAP_ID": JSON.stringify(
-      snapId ?? "local:http://localhost:8081",
+      snapId ?? "local:http://localhost:9000",
     ),
   },
 })

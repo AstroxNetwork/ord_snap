@@ -1,9 +1,9 @@
 {
   "version": "0.0.1",
-  "proposedName": "OrdSnap",
   "description": "The ord snap.",
+  "proposedName": "OrdSnap",
   "source": {
-    "shasum": "/4IVGtRE+MU156rp2YzE1ZoxqLFpDRl3h7T5za2qe5c=",
+    "shasum": "7MLM2QqU+Ezu9xySZTgedtUBeZX7q/ESmv2XpIF1234=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -14,6 +14,10 @@
   },
   "initialPermissions": {
     "endowment:network-access": {},
+    "endowment:rpc": {
+      "dapps": true,
+      "snaps": true
+    },
     "snap_confirm": {},
     "snap_getBip44Entropy": [
       {

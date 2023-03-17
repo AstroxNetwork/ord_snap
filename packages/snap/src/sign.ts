@@ -1,12 +1,13 @@
-import { SignMessageResponse, SignRawMessageResponse, Wallet } from '@astrox/ord-snap-types';
+import { SignMessageResponse, SignRawMessageResponse } from '@astrox/ord-snap-types';
 // import { Signature } from '@dfinity/agent';
 import { showConfirmationDialog } from './confirmation';
 import { getIdentity } from './getIdentity';
 // import secp256k1 from 'secp256k1';
 // import { sha256 } from 'js-sha256';
 import { fromHexString, SchorrIdentity, toHexString } from './util';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
 
-export async function sign(wallet: Wallet, message: string): Promise<SignMessageResponse> {
+export async function sign(wallet: SnapsGlobalObject, message: string): Promise<SignMessageResponse> {
   try {
     const identityString = await getIdentity(wallet);
     const identity = SchorrIdentity.fromJSON(identityString);
@@ -17,7 +18,7 @@ export async function sign(wallet: Wallet, message: string): Promise<SignMessage
   }
 }
 
-export async function signRawMessasge(wallet: Wallet, rawMessage: string): Promise<SignRawMessageResponse> {
+export async function signRawMessasge(wallet: SnapsGlobalObject, rawMessage: string): Promise<SignRawMessageResponse> {
   try {
     const identityString = await getIdentity(wallet);
     const identity = SchorrIdentity.fromJSON(identityString);

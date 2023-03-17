@@ -8,16 +8,17 @@
   ],
   "scripts": {
     "build:snap": "lerna run build --scope @astrox/ord-snap",
+    "build:ecc": "cd packages/ecc && tsc -b tsconfig.json",
     "build:types": "cd packages/types && tsc -b tsconfig.json",
     "build:adapter": "cd packages/adapter && tsc -b tsconfig.json",
-    "build:example": "cd packages/example && rm -rf node_modules && pnpm install",
+    "build:example": "cd packages/example && rm -rf node_modules && yarn install",
     "clean": "./scripts/clean.sh",
-    "build:all": "pnpm run clean && pnpm run build:types && pnpm run build:snap && pnpm run build:adapter && pnpm run build:example",
+    "build:all": "yarn run clean && yarn run build:types && yarn run build:ecc && yarn run build:snap && yarn run build:adapter && yarn run build:example",
     "start:snap": "lerna run serve --scope @astrox/ord-snap",
-    "start:example:local": "cd packages/example && pnpm run run dev",
-    "start:example:production": "cd packages/example && pnpm run run dev",
+    "start:example:local": "cd packages/example && yarn run dev",
+    "start:example:production": "cd packages/example && yarn run dev",
     "bootstrap": "lerna bootstrap",
-    "demo:local": "concurrently  --raw --kill-others \"pnpm run run start:snap\" \"pnpm run run start:example:local\""
+    "demo:local": "concurrently  --raw --kill-others \"yarn run start:snap\" \"yarn run start:example:local\""
   },
   "devDependencies": {
     "lerna": "^4.0.0"

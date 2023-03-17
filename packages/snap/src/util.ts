@@ -1,7 +1,7 @@
-import { Wallet } from '@astrox/ord-snap-types';
 import { KeyPair, Signature, SignIdentity } from '@dfinity/agent';
 import * as secp256k1 from '@noble/secp256k1';
 import { Secp256k1PublicKey, JsonableSecp256k1Identity } from '@dfinity/identity-secp256k1';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
 
 /**
  * Return an array buffer from its hexadecimal representation.
@@ -19,7 +19,7 @@ export function toHexString(bytes: ArrayBuffer): string {
   return new Uint8Array(bytes).reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
 }
 
-export const getMetamaskVersion = async (wallet: Wallet): Promise<string> =>
+export const getMetamaskVersion = async (wallet: SnapsGlobalObject): Promise<string> =>
   (await wallet.request({
     method: 'web3_clientVersion',
     params: [],
@@ -168,6 +168,3 @@ export class SchorrIdentity extends SignIdentity {
     return signature.buffer as Signature;
   }
 }
-
-
-

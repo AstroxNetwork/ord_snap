@@ -1,4 +1,5 @@
-import { SnapMethods, Wallet } from '@astrox/ord-snap-types';
+import { SnapMethods } from '@astrox/ord-snap-types';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
 
 type ConfirmationDialogContent = {
   prompt: string;
@@ -6,8 +7,8 @@ type ConfirmationDialogContent = {
   textAreaContent?: string;
 };
 
-export async function showConfirmationDialog(wallet: Wallet, message: ConfirmationDialogContent): Promise<boolean> {
-  return (await wallet.request({
+export async function showConfirmationDialog(snap: SnapsGlobalObject, message: ConfirmationDialogContent): Promise<boolean> {
+  return (await snap.request({
     method: SnapMethods.confirm,
     params: [message],
   })) as boolean;

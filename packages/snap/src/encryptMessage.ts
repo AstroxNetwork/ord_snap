@@ -2,9 +2,10 @@ import * as secp from '@noble/secp256k1';
 import { getIdentity } from './getIdentity';
 import browserifyCipher from 'browserify-cipher';
 import { fromHexString, SchorrIdentity, toHexString } from './util';
-import { Wallet, EncryptMessageResponse } from '@astrox/ord-snap-types';
+import { EncryptMessageResponse } from '@astrox/ord-snap-types';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
 
-export async function encryptMessage(wallet: Wallet, theirPublicKey: string, text: string): Promise<EncryptMessageResponse> {
+export async function encryptMessage(wallet: SnapsGlobalObject, theirPublicKey: string, text: string): Promise<EncryptMessageResponse> {
   const identityString = await getIdentity(wallet);
   const identity = SchorrIdentity.fromJSON(identityString);
   let sharedPoint = toHexString(secp.getSharedSecret(toHexString(new Uint8Array(identity.getKeyPair().secretKey)), '02' + theirPublicKey));

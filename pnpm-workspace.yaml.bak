@@ -2,3 +2,5 @@ packages:
   - 'packages/adapter'
   - 'packages/snap'
   - 'packages/types'
+  - 'packages/example'
+  - 'packages/ecc'

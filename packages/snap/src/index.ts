@@ -1,48 +1,81 @@
-import { MetamaskOrdRpcRequest, MetamaskState, Wallet } from '@astrox/ord-snap-types';
+import {
+  ConfigureRequest,
+  DecryptMessageRequest,
+  EncryptMessageRequest,
+  MetamaskOrdRpcRequest,
+  MetamaskState,
+  SignRawMessageRequest,
+  SignRequest,
+} from '@astrox/ord-snap-types';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
+import { OnRpcRequestHandler } from '@metamask/snaps-types';
 import { configure, defaultConfiguration } from './config';
 import { decryptMessage } from './decryptMessage';
 import { encryptMessage } from './encryptMessage';
 
 import { getPrincipal } from './getPrincipal';
 import { getRawPublicKey } from './getPublicKey';
+import { OrdKeyring } from './keyring';
+// import { OrdKeyring } from './keyring';
 import { sign, signRawMessasge } from './sign';
 
-declare let wallet: Wallet;
+declare let snap: SnapsGlobalObject;
 
 export const EmptyMetamaskState: () => MetamaskState = () => ({
   ord: { config: defaultConfiguration, messages: [] },
 });
 
-export const onRpcRequest = async ({ origin, request }: { origin: string; request: MetamaskOrdRpcRequest }) => {
-  const state = await wallet.request({
+export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
+  console.log(snap);
+  // console.log({ request });
+  // console.log('asdfasdfasd');
+  // let snap: SnapsGlobalObject;
+  // console.log(snap);
+  const state = await snap.request({
     method: 'snap_manageState',
-    params: ['get'],
+    params: { operation: 'get' },
   });
-
   if (!state) {
     // initialize state if empty and set default config
-    await wallet.request({
+    await snap.request({
       method: 'snap_manageState',
-      params: ['update', EmptyMetamaskState()],
+      params: { newState: EmptyMetamaskState(), operation: 'update' },
     });
   }
-
   switch (request.method) {
-    case 'Ord_configure':
-      const resp = await configure(wallet, request.params.configuration.network, request.params.configuration);
+    case 'Schnorr_configure': {
+      const resp = await configure(
+        snap,
+        (request as unknown as ConfigureRequest).params.configuration.network,
+        (request as unknown as ConfigureRequest).params.configuration,
+      );
       return resp.snapConfig;
-    case 'Ord_getPrincipal':
-      return await getPrincipal(wallet);
-    case 'Ord_getRawPublicKey':
-      return await getRawPublicKey(wallet);
-    case 'Ord_sign':
-      return await sign(wallet, request.params.message);
-    case 'Ord_signRawMessage':
-      return await signRawMessasge(wallet, request.params.message);
-    case 'Ord_encryptMessage':
-      return await encryptMessage(wallet, request.params.theirPublicKey, request.params.message);
-    case 'Ord_decryptMessage':
-      return await decryptMessage(wallet, request.params.theirPublicKey, request.params.cipherText);
+    }
+    case 'Schnorr_getPrincipal':
+      return await getPrincipal(snap);
+    case 'Schnorr_getRawPublicKey':
+      return await getRawPublicKey(snap);
+    case 'Schnorr_sign':
+      return await sign(snap, (request as unknown as SignRequest).params.message);
+    case 'Schnorr_signRawMessage':
+      return await signRawMessasge(snap, (request as unknown as SignRawMessageRequest).params.message);
+    case 'Schnorr_encryptMessage':
+      return await encryptMessage(
+        snap,
+        (request as unknown as EncryptMessageRequest).params.theirPublicKey,
+        (request as unknown as EncryptMessageRequest).params.message,
+      );
+    case 'Schnorr_decryptMessage':
+      return await decryptMessage(
+        snap,
+        (request as unknown as DecryptMessageRequest).params.theirPublicKey,
+        (request as unknown as DecryptMessageRequest).params.cipherText,
+      );
+    case 'Ord_initKeyRing': {
+      const kr = await OrdKeyring.fromIndex(snap, 0);
+      // await kr.addAccounts(1);
+      return true;
+    }
     default:
       throw new Error('Unsupported RPC method');
   }

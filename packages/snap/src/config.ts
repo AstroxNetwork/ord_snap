@@ -1,4 +1,5 @@
-import { MetamaskState, SnapConfig, Wallet } from '@astrox/ord-snap-types';
+import { MetamaskState, SnapConfig } from '@astrox/ord-snap-types';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
 import deepmerge from 'deepmerge';
 
 export const btcMainnetConfiguration: SnapConfig = {
@@ -63,10 +64,10 @@ export function getDefaultConfiguration(networkName?: string): SnapConfig {
   }
 }
 
-export async function getConfiguration(wallet: Wallet): Promise<SnapConfig> {
-  const state = (await wallet.request({
+export async function getConfiguration(snap: SnapsGlobalObject): Promise<SnapConfig> {
+  const state = (await snap.request({
     method: 'snap_manageState',
-    params: ['get'],
+    params: { operation: 'get' },
   })) as MetamaskState;
   if (!state || !state.ord.config) {
     return defaultConfiguration;
@@ -78,7 +79,7 @@ export interface ConfigureResponse {
   snapConfig: SnapConfig;
 }
 
-export async function configure(wallet: Wallet, networkName: string, overrides?: unknown): Promise<ConfigureResponse> {
+export async function configure(snap: SnapsGlobalObject, networkName: string, overrides?: unknown): Promise<ConfigureResponse> {
   const defaultConfig = getDefaultConfiguration(networkName);
   const configuration = overrides ? deepmerge(defaultConfig, overrides) : defaultConfig;
   const [, , coinType, , ,] = configuration.derivationPath.split('/');
@@ -90,11 +91,14 @@ export async function configure(wallet: Wallet, networkName: string, overrides?:
   if (bip44Code !== String(configuration.coinType)) {
     throw new Error('Wrong CoinType in derivation path');
   }
-  const state = (await wallet.request({ method: 'snap_manageState', params: ['get'] })) as MetamaskState;
-  state.ord.config = configuration;
-  wallet.request({
+  const state = (await snap.request({
     method: 'snap_manageState',
-    params: ['update', state],
+    params: { operation: 'get' },
+  })) as MetamaskState;
+  state.ord.config = configuration;
+  await snap.request({
+    method: 'snap_manageState',
+    params: { newState: state, operation: 'update' },
   });
   return { snapConfig: configuration };
 }

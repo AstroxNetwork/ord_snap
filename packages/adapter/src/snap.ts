@@ -22,7 +22,7 @@ export class MetamaskOrdSnap {
 
   public constructor(snapOrigin: string) {
     this.snapOrigin = snapOrigin;
-    this.snapId = `wallet_snap_${this.snapOrigin}`;
+    this.snapId = snapOrigin;
   }
 
   public getOrdSnapApi = async (): Promise<OrdSnapApi> => {
@@ -74,17 +74,15 @@ export async function enableOrdSnap(
 
   const isInstalled = await isSnapInstalled(snapId);
 
+  console.log({ isInstalled });
+
   if (!isInstalled) {
     // // enable snap
     await window.ethereum.request({
-      method: 'wallet_enable',
-      params: [
-        {
-          [`wallet_snap_${snapId}`]: {
-            ...snapInstallationParams,
-          },
-        },
-      ],
+      method: 'wallet_requestSnaps',
+      params: {
+        [snapId]: { ...snapInstallationParams },
+      },
     });
   }
 
@@ -92,8 +90,9 @@ export async function enableOrdSnap(
 
   // create snap describer
   const snap = new MetamaskOrdSnap(snapOrigin || defaultSnapOrigin);
+  const api = await snap.getOrdSnapApi();
   // set initial configuration
-  await (await snap.getOrdSnapApi()).configure(config);
+  await api.configure(config);
   // return snap object
   return snap;
 }

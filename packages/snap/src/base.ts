@@ -1,27 +1,21 @@
 import { getBIP44AddressKeyDeriver, JsonBIP44CoinTypeNode } from '@metamask/key-tree';
-import { MetamaskState, Wallet } from '@astrox/ord-snap-types';
+import { MetamaskState } from '@astrox/ord-snap-types';
+import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { getMetamaskVersion, isNewerVersion } from './util';
 
-export async function getPrivateKeyFromWallet(wallet: Wallet, index?: number): Promise<Uint8Array> {
-  const snapState = (await wallet.request({ method: 'snap_manageState', params: ['get'] })) as MetamaskState;
+export async function getPrivateKeyFromWallet(snap: SnapsGlobalObject, index?: number): Promise<Uint8Array> {
+  const snapState = (await snap.request({ method: 'snap_manageState', params: { operation: 'get' } })) as MetamaskState;
   const { derivationPath } = snapState.ord.config;
   const [, , coinType, account, change, addressIndex] = derivationPath.split('/');
   const bip44Code = coinType.replace("'", '');
   let bip44Node: JsonBIP44CoinTypeNode;
-  const currentVersion = await getMetamaskVersion(wallet);
 
-  if (isNewerVersion('MetaMask/v10.22.0-flask.0', currentVersion))
-    bip44Node = (await wallet.request({
-      method: 'snap_getBip44Entropy',
-      params: {
-        coinType: Number(bip44Code as string),
-      },
-    })) as JsonBIP44CoinTypeNode;
-  else
-    bip44Node = (await wallet.request({
-      method: `snap_getBip44Entropy_${bip44Code}`,
-      params: [],
-    })) as JsonBIP44CoinTypeNode;
+  bip44Node = (await snap.request({
+    method: 'snap_getBip44Entropy',
+    params: {
+      coinType: Number(bip44Code as string),
+    },
+  })) as JsonBIP44CoinTypeNode;
 
   let privateKey: Uint8Array;
 
