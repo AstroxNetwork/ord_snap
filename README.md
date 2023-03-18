@@ -1,5 +1,7 @@
 # OrdSnap
 
+![Banner](./assets/banner.png)
+
 An Metamask Flask Snap Plugin, it does:
 
 1. Use Metamask as your bitcoin wallet
