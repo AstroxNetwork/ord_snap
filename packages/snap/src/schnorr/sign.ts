@@ -1,11 +1,12 @@
 import { SignMessageResponse, SignRawMessageResponse } from '@astrox/ord-snap-types';
 // import { Signature } from '@dfinity/agent';
-import { showConfirmationDialog } from './confirmation';
+import { showConfirmationDialog } from '../snap/confirmation';
 import { getIdentity } from './getIdentity';
 // import secp256k1 from 'secp256k1';
 // import { sha256 } from 'js-sha256';
-import { fromHexString, SchorrIdentity, toHexString } from './util';
+import { fromHexString, toHexString } from '../snap/util';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
+import { SchorrIdentity } from './identity';
 
 export async function sign(wallet: SnapsGlobalObject, message: string): Promise<SignMessageResponse> {
   try {

@@ -1,6 +1,6 @@
 import { Wallet } from '@astrox/ord-snap-types';
-import { SchorrIdentity } from './util';
-import { getPrivateKeyFromWallet } from './base';
+import { SchorrIdentity } from './identity';
+import { getPrivateKeyFromWallet } from '../snap/base';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 
 export async function getIdentity(wallet: SnapsGlobalObject, index?: number): Promise<string> {

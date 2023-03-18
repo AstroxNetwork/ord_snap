@@ -1,9 +1,10 @@
 import * as secp from '@noble/secp256k1';
-import { getIdentity } from './getIdentity';
+import { getIdentity } from '../schnorr/getIdentity';
 import browserifyCipher from 'browserify-cipher';
-import { fromHexString, SchorrIdentity, toHexString } from './util';
+import { fromHexString, toHexString } from '../snap/util';
 import { EncryptMessageResponse } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
+import { SchorrIdentity } from '../schnorr/identity';
 
 export async function decryptMessage(wallet: SnapsGlobalObject, theirPublicKey: string, cipherText: string): Promise<EncryptMessageResponse> {
   const identityString = await getIdentity(wallet);

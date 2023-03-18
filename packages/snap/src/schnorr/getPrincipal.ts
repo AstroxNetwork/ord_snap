@@ -1,11 +1,11 @@
 import { Wallet } from '@astrox/ord-snap-types';
 import { getIdentity } from './getIdentity';
-import { SchorrIdentity, toHexString } from './util';
+import { SchorrIdentity } from './identity';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 
-export async function getRawPublicKey(wallet: SnapsGlobalObject): Promise<string> {
+export async function getPrincipal(wallet: SnapsGlobalObject): Promise<string> {
   const identityString = await getIdentity(wallet);
   const identity = SchorrIdentity.fromJSON(identityString);
-  const rawPublicKey = identity.getPublicKey().toRaw();
-  return toHexString(rawPublicKey);
+  const principal = await identity.getPrincipal().toText();
+  return principal;
 }

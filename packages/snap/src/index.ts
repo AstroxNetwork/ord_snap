@@ -9,15 +9,15 @@ import {
 } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { OnRpcRequestHandler } from '@metamask/snaps-types';
-import { configure, defaultConfiguration } from './config';
-import { decryptMessage } from './decryptMessage';
-import { encryptMessage } from './encryptMessage';
+import { configure, defaultConfiguration } from './snap/config';
+import { decryptMessage } from './nostr/decryptMessage';
+import { encryptMessage } from './nostr/encryptMessage';
 
-import { getPrincipal } from './getPrincipal';
-import { getRawPublicKey } from './getPublicKey';
-import { OrdKeyring } from './keyring';
+import { getPrincipal } from './schnorr/getPrincipal';
+import { getRawPublicKey } from './schnorr/getPublicKey';
+import { OrdKeyring } from './keyRing/keyring';
 // import { OrdKeyring } from './keyring';
-import { sign, signRawMessasge } from './sign';
+import { sign, signRawMessasge } from './schnorr/sign';
 
 declare let snap: SnapsGlobalObject;
 

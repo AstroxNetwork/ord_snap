@@ -5,13 +5,13 @@ import ECPairFactory, { ECPairInterface } from 'ecpair';
 import ecc from '@bitcoinerlab/secp256k1';
 
 import { Network } from 'bitcoinjs-lib';
-import { getPrivateKeyFromSLIP10 } from './base';
+import { getPrivateKeyFromSLIP10 } from '../snap/base';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { sha256 } from 'bitcoinjs-lib/src/crypto';
-import { fromHexString, publicKeyToAddress, toPsbtNetwork } from './util';
-import { AddressType, NetworkType } from './constant/types';
-import { ADDRESS_TYPES } from './constant/constant';
-import { StorageService } from './storage';
+import { fromHexString, publicKeyToAddress, toPsbtNetwork } from '../snap/util';
+import { AddressType, NetworkType } from '../constant/types';
+import { ADDRESS_TYPES } from '../constant/constant';
+import { StorageService } from '../snap/storage';
 
 bitcoin.initEccLib(ecc);
 const ECPair = ECPairFactory(ecc);
