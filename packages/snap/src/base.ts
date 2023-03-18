@@ -1,12 +1,14 @@
-import { getBIP44AddressKeyDeriver, JsonBIP44CoinTypeNode } from '@metamask/key-tree';
+import { getBIP44AddressKeyDeriver, JsonBIP44CoinTypeNode, SLIP10Node } from '@metamask/key-tree';
 import { MetamaskState } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { getMetamaskVersion, isNewerVersion } from './util';
+import * as bip32 from 'bip32';
+import { BIP32Interface } from 'bip32';
 
-export async function getPrivateKeyFromWallet(snap: SnapsGlobalObject, index?: number): Promise<Uint8Array> {
+export async function getPrivateKeyFromWallet(snap: SnapsGlobalObject, path?: string, index?: number): Promise<Uint8Array> {
   const snapState = (await snap.request({ method: 'snap_manageState', params: { operation: 'get' } })) as MetamaskState;
   const { derivationPath } = snapState.ord.config;
-  const [, , coinType, account, change, addressIndex] = derivationPath.split('/');
+  const [, , coinType, account, change, addressIndex] = path !== undefined ? path.split('/') : derivationPath.split('/');
   const bip44Code = coinType.replace("'", '');
   let bip44Node: JsonBIP44CoinTypeNode;
 
@@ -28,3 +30,23 @@ export async function getPrivateKeyFromWallet(snap: SnapsGlobalObject, index?: n
   privateKey = new Uint8Array(extendedPrivateKey.privateKeyBytes.slice(0, 32));
   return privateKey;
 }
+
+export async function getPrivateKeyFromSLIP10(snap: SnapsGlobalObject, path?: string, index?: number): Promise<Uint8Array> {
+  const snapState = (await snap.request({ method: 'snap_manageState', params: { operation: 'get' } })) as MetamaskState;
+  const { derivationPath } = snapState.ord.config;
+  const [, purpose, coinType, account, change, addressIndex] = path !== undefined ? path.split('/') : derivationPath.split('/');
+
+  let slip10Node: SLIP10Node = (await snap.request({
+    method: 'snap_getBip32Entropy',
+    params: {
+      path: ['m', purpose, coinType, account, change],
+      curve: 'secp256k1',
+    },
+  })) as SLIP10Node;
+  const aIndex = `${addressIndex ?? index ?? 0}`;
+  const node = await SLIP10Node.fromJSON(slip10Node);
+  const child = await node.derive([`slip10:${Number.parseInt(aIndex.replace("'", ''), 10)}`]);
+  return child.privateKeyBytes;
+}
+
+export const trimHexPrefix = (key: string) => (key.startsWith('0x') ? key.substring(2) : key);

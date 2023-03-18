@@ -1,6 +1,17 @@
 import { OrdSnapApi, SnapConfig } from '@astrox/ord-snap-types';
 import { hasMetaMask, isMetamaskSnapsSupported, isSnapInstalled } from './util';
-import { configure, decryptMessage, encryptMessage, getPrincipal, getRawPublicKey, initKeyRing, sign, signRawMessage } from './methods';
+import {
+  configure,
+  decryptMessage,
+  encryptMessage,
+  getAddress,
+  getPrincipal,
+  getRawPublicKey,
+  initKeyRing,
+  sign,
+  signRawMessage,
+  addNextAccount,
+} from './methods';
 
 interface SnapIdentity {
   api: OrdSnapApi;
@@ -35,6 +46,8 @@ export class MetamaskOrdSnap {
       getPrincipal: getPrincipal.bind(this),
       getRawPublicKey: getRawPublicKey.bind(this),
       initKeyRing: initKeyRing.bind(this),
+      getAddress: getAddress.bind(this),
+      addNextAccount: addNextAccount.bind(this),
     };
   };
 }

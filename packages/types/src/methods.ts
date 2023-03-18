@@ -16,11 +16,19 @@ export abstract class SnapMethods {
   static getBip44Entropy: string = `snap_getBip44Entropy_${OrdCoinCode}`;
 }
 
+export type NetworkTypeString = 'mainnet' | 'testnet';
+export type AddresTypeString = 'P2PKH' | 'P2WPKH' | 'P2TR' | 'P2SH-P2WPKH' | 'M44_P2TR' | 'M44_P2WPKH';
+
+export interface DataStorage<T extends any> {
+  [key: string]: { data: T; updateTime: number };
+}
+
 export type MetamaskState = {
   ord: {
     config: SnapConfig;
     messages: ArrayBuffer[];
   };
+  storage: DataStorage<any>;
 };
 
 export interface ConfigureRequest {
@@ -71,6 +79,19 @@ export interface InitKeyRing {
   method: 'Ord_initKeyRing';
 }
 
+export interface GetAddress {
+  method: 'Ord_getAddress';
+  params: {
+    index?: number;
+    addressType?: string;
+    networkType?: string;
+  };
+}
+
+export interface AddNextAccount {
+  method: 'Ord_addNextAccount';
+}
+
 export type MetamaskOrdRpcRequest =
   | ConfigureRequest
   | SignRequest
@@ -79,6 +100,8 @@ export type MetamaskOrdRpcRequest =
   | GetRawPublicKey
   | EncryptMessageRequest
   | DecryptMessageRequest
-  | InitKeyRing;
+  | GetAddress
+  | InitKeyRing
+  | AddNextAccount;
 
 type Method = MetamaskOrdRpcRequest['method'];

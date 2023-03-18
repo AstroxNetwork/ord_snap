@@ -3,7 +3,7 @@
   "description": "The ord snap.",
   "proposedName": "OrdSnap",
   "source": {
-    "shasum": "KjeQzU9qMLvVwHfbvsgJFUZ8fV7tI2a94Xb7ZqTK/hA=",
+    "shasum": "E50Np58XE+SnU6LrHlvSUbsFxg4eImXXxz2Tc/AuWlQ=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -28,6 +28,48 @@
       },
       {
         "coinType": 1237
+      }
+    ],
+    "snap_getBip32Entropy": [
+      {
+        "path": [
+          "m",
+          "44'",
+          "0'",
+          "0'",
+          "0"
+        ],
+        "curve": "secp256k1"
+      },
+      {
+        "path": [
+          "m",
+          "49'",
+          "0'",
+          "0'",
+          "0"
+        ],
+        "curve": "secp256k1"
+      },
+      {
+        "path": [
+          "m",
+          "84'",
+          "0'",
+          "0'",
+          "0"
+        ],
+        "curve": "secp256k1"
+      },
+      {
+        "path": [
+          "m",
+          "86'",
+          "0'",
+          "0'",
+          "0"
+        ],
+        "curve": "secp256k1"
       }
     ],
     "snap_manageState": {}

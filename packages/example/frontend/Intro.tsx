@@ -39,6 +39,8 @@ export function Intro() {
     undefined,
   )
 
+  const [accs, setAccs] = useState<string | undefined>(undefined)
+
   const installSnap = useCallback(async () => {
     const installResult = await initiateOrdSnap("nostr") //mainnet, local, nostr
     if (!installResult.isSnapInstalled) {
@@ -80,6 +82,17 @@ export function Intro() {
     console.log(kr)
   }
 
+  const getAddress = async () => {
+    console.log(snapIdentity.api)
+    const ad = await snapIdentity.api.getAddress()
+    setAccs(ad)
+  }
+  const addNextAccount = async () => {
+    console.log(snapIdentity.api)
+    const ad = await snapIdentity.api.addNextAccount()
+    setAccs(ad)
+  }
+
   useEffect(() => {
     ;(async () => {
       if (!snapIdentity) {
@@ -87,6 +100,7 @@ export function Intro() {
       } else {
         await getPublicKey()
         await initKeyRing()
+        await getAddress()
       }
     })()
   }, [snapIdentity])
@@ -209,10 +223,11 @@ export function Intro() {
                 }}
               />
               <button className="demo-button" onClick={decryptMessage}>
-                Encrypt Message
+                Decrypt Message
               </button>
             </>
           ) : null}
+
           {messageDecrypted !== undefined ? (
             <div
               style={{
@@ -224,6 +239,25 @@ export function Intro() {
               <code>Decrypted Message is : </code>
               <p>{messageDecrypted}</p>
             </div>
+          ) : null}
+
+          <h2>Add Account</h2>
+          {installed ? (
+            <>
+              <div
+                style={{
+                  wordBreak: "break-all",
+                  maxWidth: "100%",
+                  margin: "1em 0",
+                }}
+              >
+                <code>Current Accounts: </code>
+                <p>{accs}</p>
+              </div>
+              <button className="demo-button" onClick={addNextAccount}>
+                Add Account
+              </button>
+            </>
           ) : null}
         </div>
 

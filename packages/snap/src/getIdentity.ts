@@ -4,7 +4,7 @@ import { getPrivateKeyFromWallet } from './base';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 
 export async function getIdentity(wallet: SnapsGlobalObject, index?: number): Promise<string> {
-  const privateKey = await getPrivateKeyFromWallet(wallet, index);
+  const privateKey = await getPrivateKeyFromWallet(wallet, undefined, index);
 
   const sk = SchorrIdentity.fromSecretKey(privateKey.buffer);
 

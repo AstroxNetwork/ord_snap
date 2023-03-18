@@ -23,6 +23,7 @@ declare let snap: SnapsGlobalObject;
 
 export const EmptyMetamaskState: () => MetamaskState = () => ({
   ord: { config: defaultConfiguration, messages: [] },
+  storage: {},
 });
 
 export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
@@ -71,9 +72,23 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
         (request as unknown as DecryptMessageRequest).params.cipherText,
       );
     case 'Ord_initKeyRing': {
-      const kr = await OrdKeyring.fromIndex(snap, 0);
+      const kr = await OrdKeyring.fromStorage(snap);
       // await kr.addAccounts(1);
-      return kr.getAccounts();
+      return JSON.stringify(await kr.getAccounts());
+    }
+    case 'Ord_getAddress': {
+      const kr = await OrdKeyring.fromStorage(snap);
+      return await kr
+        .getAddress
+        // (request as unknown as GetAddress).params.index,
+        // (request as unknown as GetAddress).params.addressType,
+        // (request as unknown as GetAddress).params.networkType,
+        ();
+    }
+    case 'Ord_addNextAccount': {
+      const kr = await OrdKeyring.fromStorage(snap);
+      await kr.addNextAccount();
+      return JSON.stringify(await kr.getAccounts());
     }
     default:
       throw new Error('Unsupported RPC method');

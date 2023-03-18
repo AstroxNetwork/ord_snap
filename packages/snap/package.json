@@ -61,6 +61,7 @@
     "babel-loader": "^8.2.2",
     "bitcoinjs-lib": "^6.1.0",
     "bitcore-lib": "^10.0.0",
+    "bip32": "^2.0.6",
     "brfs": "^2.0.2",
     "bs58check": "^3.0.1",
     "deepmerge": "^4.2.2",

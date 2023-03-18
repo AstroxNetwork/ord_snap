@@ -43,5 +43,7 @@ export interface OrdSnapApi {
   encryptMessage(theirPublicKey: string, message: string): Promise<EncryptMessageResponse>;
   decryptMessage(theirPublicKey: string, cipherText: string): Promise<string>;
   getPrincipal(): Promise<string>;
-  initKeyRing(): Promise<string[]>;
+  initKeyRing(): Promise<string>;
+  getAddress(): Promise<string>;
+  addNextAccount(): Promise<string>;
 }

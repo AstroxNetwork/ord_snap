@@ -48,6 +48,14 @@ export async function getRawPublicKey(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Schnorr_getRawPublicKey' }, this.snapId);
 }
 
-export async function initKeyRing(this: MetamaskOrdSnap): Promise<string[]> {
+export async function initKeyRing(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_initKeyRing' }, this.snapId);
+}
+
+export async function getAddress(this: MetamaskOrdSnap): Promise<string> {
+  return await sendSnapMethod({ method: 'Ord_getAddress', params: {} }, this.snapId);
+}
+
+export async function addNextAccount(this: MetamaskOrdSnap): Promise<string> {
+  return await sendSnapMethod({ method: 'Ord_addNextAccount' }, this.snapId);
 }
