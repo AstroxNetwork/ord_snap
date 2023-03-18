@@ -8,12 +8,11 @@
   ],
   "scripts": {
     "build:snap": "lerna run build --scope @astrox/ord-snap",
-    "build:ecc": "cd packages/ecc && tsc -b tsconfig.json",
     "build:types": "cd packages/types && tsc -b tsconfig.json",
     "build:adapter": "cd packages/adapter && tsc -b tsconfig.json",
     "build:example": "cd packages/example && rm -rf node_modules && yarn install",
     "clean": "./scripts/clean.sh",
-    "build:all": "yarn run clean && yarn run build:types && yarn run build:ecc && yarn run build:snap && yarn run build:adapter && yarn run build:example",
+    "build:all": "yarn run clean && yarn run build:types && yarn run build:snap && yarn run build:adapter && yarn run build:example",
     "start:snap": "lerna run serve --scope @astrox/ord-snap",
     "start:example:local": "cd packages/example && yarn run dev",
     "start:example:production": "cd packages/example && yarn run dev",
