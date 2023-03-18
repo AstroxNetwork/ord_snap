@@ -1,6 +1,6 @@
 # OrdSnap
 
-![Banner](./assets/banner.png)
+![Banner](assets/banner.png)
 
 An Metamask Flask Snap Plugin, it does:
 
