@@ -24,3 +24,10 @@ In [packages/example/frontend/Intro.tsx](./packages/example/frontend/Intro.tsx)
 2. Go to example page or any supported page, install SchnorrSnap before run
 
 3. Can sign message afterwards
+
+## Build With and Inspired By:
+
+1. [Ordinals](https://ordinals.com/)
+2. [BitcoinJS](https://github.com/bitcoinjs/bitcoinjs-lib)
+3. [Metamask Snap](https://github.com/MetaMask/template-snap-monorepo)
+4. [UniSat](https://github.com/unisat-wallet/extension)
