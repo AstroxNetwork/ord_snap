@@ -3,8 +3,10 @@
 An Metamask Flask Snap Plugin, it does:
 
 1. Use Metamask as your bitcoin wallet
-2. Send/Receive Bitcoin
-3. Send/Receive Ordinals (Building)
+2. Send/Receive Bitcoin (WIP)
+3. Send/Receive/Inscribe Ordinals (WIP)
+4. Use Lightning Network (WIP)
+5. Use Nostr (WIP)
 
 ## Quick Start
 
@@ -21,7 +23,7 @@ In [packages/example/frontend/Intro.tsx](./packages/example/frontend/Intro.tsx)
 1. [Download Metamask Flask](https://metamask.io/flask/)
    and uninstall/disable old metamask
 
-2. Go to example page or any supported page, install SchnorrSnap before run
+2. Go to example page or any supported page, install OrdSnap before run
 
 3. Can sign message afterwards
 
@@ -31,3 +33,4 @@ In [packages/example/frontend/Intro.tsx](./packages/example/frontend/Intro.tsx)
 2. [BitcoinJS](https://github.com/bitcoinjs/bitcoinjs-lib)
 3. [Metamask Snap](https://github.com/MetaMask/template-snap-monorepo)
 4. [UniSat](https://github.com/unisat-wallet/extension)
+5. [Schnorr_snap](https://github.com/neeboo/schnorr_snap)
