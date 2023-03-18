@@ -152,13 +152,26 @@ export class HttpClient {
     this._pipeline.splice(i >= 0 ? i : this._pipeline.length, 0, Object.assign(fn, { priority }));
   }
 
-  public async httpGet(endpoint: string): Promise<Response> {
+  public async httpGet(endpoint: string, body: Record<string, unknown>): Promise<Response> {
     const headers: Record<string, string> = this._credentials
       ? {
           Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64'),
         }
       : {};
-    const response = await this._requestAndRetry(() => this._fetch('' + new URL(`${endpoint}`, this._host), { headers, ...this._fetchOptions }));
+
+    let url = endpoint;
+    let c = 0;
+    for (const id in body) {
+      if (c == 0) {
+        url += '?';
+      } else {
+        url += '&';
+      }
+      url += `${id}=${body[id]}`;
+      c++;
+    }
+
+    const response = await this._requestAndRetry(() => this._fetch('' + new URL(`${url}`, this._host), { headers, ...this._fetchOptions }));
     return response;
   }
   public async httpPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {
