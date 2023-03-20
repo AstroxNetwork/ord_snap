@@ -107,6 +107,13 @@ export interface GetAddressUtxo {
   };
 }
 
+export interface GetAddressBalance {
+  method: 'Ord_getAddressBalance';
+  params: {
+    address: string;
+  };
+}
+
 export type MetamaskOrdRpcRequest =
   | ConfigureRequest
   | SignRequest
@@ -119,6 +126,7 @@ export type MetamaskOrdRpcRequest =
   | InitKeyRing
   | AddNextAccount
   | InitHttpService
-  | GetAddressUtxo;
+  | GetAddressUtxo
+  | GetAddressBalance;
 
 type Method = MetamaskOrdRpcRequest['method'];

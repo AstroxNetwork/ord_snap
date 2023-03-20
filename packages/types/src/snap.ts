@@ -48,4 +48,5 @@ export interface OrdSnapApi {
   addNextAccount(): Promise<string>;
   initHttpService(host?: string, headers?: Record<string, unknown>): Promise<void>;
   getAddressUtxo(address: string): Promise<string>;
+  getAddressBalance(address: string): Promise<string>;
 }

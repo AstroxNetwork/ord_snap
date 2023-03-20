@@ -107,6 +107,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       const utxos = await http.getAddressUtxo((request as unknown as GetAddressUtxo).params.address);
       return JSON.stringify(utxos);
     }
+    case 'Ord_getAddressBalance': {
+      const http = await HttpService.fromStorage(snap);
+      const balance = await http.getAddressBalance((request as unknown as GetAddressUtxo).params.address);
+      return JSON.stringify(balance);
+    }
     default:
       throw new Error('Unsupported RPC method');
   }

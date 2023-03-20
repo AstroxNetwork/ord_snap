@@ -198,6 +198,7 @@ export class HttpClient {
         method: 'POST',
         headers: new Headers({
           'Content-Type': 'application/json',
+          ...(this._fetchOptions.headers as any),
           ...(this._credentials ? { Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64') } : {}),
         }),
       },

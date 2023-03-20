@@ -10,6 +10,7 @@ export {
   addNextAccount,
   initHttpService,
 } from './methods';
-export { MetamaskOrdSnap, enableOrdSnap } from './snap';
-import './types';
+export { MetamaskOrdSnap, enableOrdSnap, SnapIdentity } from './snap';
+// import './types';
+export * from './types';
 export { hasMetaMask, GetSnapsResponse, getWalletSnaps, isMetamaskSnapsSupported, isSnapInstalled } from './util';

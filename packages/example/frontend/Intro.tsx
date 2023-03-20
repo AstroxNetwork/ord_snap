@@ -1,8 +1,8 @@
 import React, { createFactory, useCallback, useEffect, useState } from "react"
 import logo from "./assets/logo-dark.svg"
 import { initiateOrdSnap } from "./services/metamask"
-import { SnapIdentity } from "@astrox/ord-adapter"
-import { SignRawMessageResponse } from "@astrox/ord-types"
+import { SnapIdentity } from "@astrox/ord-snap-adapter"
+import { SignMessageResponse } from "@astrox/ord-snap-types"
 // import { canisterId, createActor } from "./services"
 
 export function Intro() {
@@ -32,7 +32,7 @@ export function Intro() {
   )
 
   const [signedMessage, setSignedMessage] = useState<
-    SignRawMessageResponse | undefined
+    SignMessageResponse | undefined
   >(undefined)
 
   const [snapIdentity, setSnapIdentity] = useState<SnapIdentity | undefined>(
@@ -65,41 +65,41 @@ export function Intro() {
   }
 
   const encryptMessage = async () => {
-    const encrypted = await snapIdentity.api.encryptMessage(
-      theirPublicKey,
-      toEncryptMessage,
+    const encrypted = await snapIdentity?.api.encryptMessage(
+      theirPublicKey!,
+      toEncryptMessage!,
     )
     setMessageEncrypted(JSON.stringify(encrypted))
   }
 
   const decryptMessage = async () => {
-    const encrypted = await snapIdentity.api.decryptMessage(
-      theirDecryptPublicKey,
-      toDecryptMessage,
+    const encrypted = await snapIdentity?.api.decryptMessage(
+      theirDecryptPublicKey!,
+      toDecryptMessage!,
     )
     setMessageDecrypted(JSON.stringify(encrypted))
   }
 
   const initKeyRing = async () => {
-    console.log(snapIdentity.api)
-    const kr = await snapIdentity.api.initKeyRing()
+    console.log(snapIdentity?.api)
+    const kr = await snapIdentity?.api.initKeyRing()
     console.log(kr)
   }
 
   const getAddress = async () => {
-    console.log(snapIdentity.api)
-    const ad = await snapIdentity.api.getAddress()
+    console.log(snapIdentity?.api)
+    const ad = await snapIdentity?.api.getAddress()
     setAccs(ad)
   }
   const addNextAccount = async () => {
-    console.log(snapIdentity.api)
-    const ad = await snapIdentity.api.addNextAccount()
+    console.log(snapIdentity?.api)
+    const ad = await snapIdentity?.api.addNextAccount()
     setAccs(ad)
   }
 
   const initHttpService = async () => {
-    console.log(snapIdentity.api)
-    await snapIdentity.api.initHttpService(host, {
+    console.log(snapIdentity?.api)
+    await snapIdentity?.api.initHttpService(host, {
       "X-Client": "UniSat Wallet",
       "X-Version": "1.1.10",
       "Content-Type": "application/json;charset=utf-8",
@@ -107,9 +107,17 @@ export function Intro() {
   }
 
   const getAddressUtxos = async () => {
-    console.log(snapIdentity.api)
-    const utxos = await snapIdentity.api.getAddressUtxo(utxoAddress ?? accs)
+    console.log(snapIdentity?.api)
+    const utxos = await snapIdentity?.api.getAddressUtxo(utxoAddress ?? accs!)
     console.log(utxos)
+  }
+
+  const getAddressBalance = async () => {
+    console.log(snapIdentity?.api)
+    const balance = await snapIdentity?.api.getAddressBalance(
+      utxoAddress ?? accs!,
+    )
+    console.log(balance)
   }
 
   useEffect(() => {
@@ -305,6 +313,9 @@ export function Intro() {
               />
               <button className="demo-button" onClick={getAddressUtxos}>
                 Get UTXOS
+              </button>
+              <button className="demo-button" onClick={getAddressBalance}>
+                Get Balance
               </button>
             </>
           ) : null}

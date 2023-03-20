@@ -67,3 +67,7 @@ export async function initHttpService(this: MetamaskOrdSnap, host?: string, head
 export async function getAddressUtxo(this: MetamaskOrdSnap, address: string): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_getAddressUtxo', params: { address } }, this.snapId);
 }
+
+export async function getAddressBalance(this: MetamaskOrdSnap, address: string): Promise<string> {
+  return await sendSnapMethod({ method: 'Ord_getAddressBalance', params: { address } }, this.snapId);
+}

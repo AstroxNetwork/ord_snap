@@ -13,9 +13,10 @@ import {
   addNextAccount,
   initHttpService,
   getAddressUtxo,
+  getAddressBalance,
 } from './methods';
 
-interface SnapIdentity {
+export interface SnapIdentity {
   api: OrdSnapApi;
   publicKey: string;
   principal: string;
@@ -52,6 +53,7 @@ export class MetamaskOrdSnap {
       addNextAccount: addNextAccount.bind(this),
       initHttpService: initHttpService.bind(this),
       getAddressUtxo: getAddressUtxo.bind(this),
+      getAddressBalance: getAddressBalance.bind(this),
     };
   };
 }
