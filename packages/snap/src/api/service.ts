@@ -1,16 +1,29 @@
+import { SnapsGlobalObject } from '@metamask/snaps-types';
+import { StorageService } from '../snap/storage';
 import { FeeSummary, InscriptionSummary, Inscription, UTXO, TxHistoryItem, AppSummary, BitcoinBalance } from '../constant/types';
 
-import { HttpClient } from './http';
+import { HttpAgentOptions, HttpClient } from './http';
 
 enum API_STATUS {
   FAILED = 0,
   SUCCESS = 1,
 }
 
-export class ApiService {
+export class HttpService {
   private httpClient: HttpClient;
-  constructor() {
-    this.httpClient = new HttpClient();
+  private storage: StorageService;
+  private options: HttpAgentOptions;
+  constructor(snap: SnapsGlobalObject, options: HttpAgentOptions = {}) {
+    this.httpClient = new HttpClient(options);
+    this.storage = new StorageService(snap, 'httpService');
+    this.options = options;
+  }
+
+  static async fromStorage(snap: SnapsGlobalObject) {
+    const options = await new HttpService(snap, { host: 'http://localhost:3000' }).getHttpService();
+    const http = new HttpService(snap, options);
+    await http.saveHttpService();
+    return http;
   }
 
   async getWalletConfig(): Promise<any> {
@@ -111,5 +124,13 @@ export class ApiService {
       throw new Error(await data.json());
     }
     return await data.json();
+  }
+
+  async saveHttpService(): Promise<boolean> {
+    return await this.storage.setData<HttpAgentOptions>(this.options);
+  }
+
+  async getHttpService(): Promise<HttpAgentOptions> {
+    return await this.storage.getData<HttpAgentOptions>();
   }
 }

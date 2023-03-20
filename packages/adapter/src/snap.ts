@@ -11,6 +11,8 @@ import {
   sign,
   signRawMessage,
   addNextAccount,
+  initHttpService,
+  getAddressUtxo,
 } from './methods';
 
 interface SnapIdentity {
@@ -48,6 +50,8 @@ export class MetamaskOrdSnap {
       initKeyRing: initKeyRing.bind(this),
       getAddress: getAddress.bind(this),
       addNextAccount: addNextAccount.bind(this),
+      initHttpService: initHttpService.bind(this),
+      getAddressUtxo: getAddressUtxo.bind(this),
     };
   };
 }

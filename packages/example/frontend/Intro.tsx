@@ -41,6 +41,10 @@ export function Intro() {
 
   const [accs, setAccs] = useState<string | undefined>(undefined)
 
+  const [host, setHost] = useState<string | undefined>("https://unisat.io/api")
+
+  const [utxoAddress, setUtxoAddress] = useState<string | undefined>(undefined)
+
   const installSnap = useCallback(async () => {
     const installResult = await initiateOrdSnap("nostr") //mainnet, local, nostr
     if (!installResult.isSnapInstalled) {
@@ -91,6 +95,21 @@ export function Intro() {
     console.log(snapIdentity.api)
     const ad = await snapIdentity.api.addNextAccount()
     setAccs(ad)
+  }
+
+  const initHttpService = async () => {
+    console.log(snapIdentity.api)
+    await snapIdentity.api.initHttpService(host, {
+      "X-Client": "UniSat Wallet",
+      "X-Version": "1.1.10",
+      "Content-Type": "application/json;charset=utf-8",
+    })
+  }
+
+  const getAddressUtxos = async () => {
+    console.log(snapIdentity.api)
+    const utxos = await snapIdentity.api.getAddressUtxo(utxoAddress ?? accs)
+    console.log(utxos)
   }
 
   useEffect(() => {
@@ -256,6 +275,36 @@ export function Intro() {
               </div>
               <button className="demo-button" onClick={addNextAccount}>
                 Add Account
+              </button>
+
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Input Http Host
+              </label>
+              <input
+                aria-label="Initialized http service"
+                style={{ padding: "1em" }}
+                onChange={async (e) => {
+                  setHost(e.target.value)
+                }}
+                defaultValue={"https://unisat.io/api"}
+              />
+              <button className="demo-button" onClick={initHttpService}>
+                Set Http Host
+              </button>
+
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Get UTXO
+              </label>
+              <input
+                aria-label="Get UTXO"
+                style={{ padding: "1em" }}
+                onChange={async (e) => {
+                  setUtxoAddress(e.target.value)
+                }}
+                defaultValue={utxoAddress ?? accs}
+              />
+              <button className="demo-button" onClick={getAddressUtxos}>
+                Get UTXOS
               </button>
             </>
           ) : null}

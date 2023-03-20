@@ -114,11 +114,12 @@ export class HttpClient {
     this._fetchOptions = options.fetchOptions;
     this._callOptions = options.callOptions;
     if (options.host !== undefined) {
-      if (!options.host.match(/^[a-z]+:/) && typeof window !== 'undefined') {
-        this._host = new URL(window.location.protocol + '//' + options.host);
-      } else {
-        this._host = new URL(options.host);
-      }
+      // if (!options.host.match(/^[a-z]+:/) && typeof window !== 'undefined') {
+      //   this._host = new URL(window.location.protocol + '//' + options.host);
+      // } else {
+      //   this._host = new URL(options.host);
+      // }
+      this._host = new URL(options.host);
     } else {
       const location = typeof window !== 'undefined' ? window.location : undefined;
       if (!location) {
@@ -146,6 +147,10 @@ export class HttpClient {
     return hostname === '127.0.0.1' || hostname.endsWith('localhost');
   }
 
+  public getHost(): string {
+    return this._host.toJSON();
+  }
+
   public addTransform(fn: HttpAgentRequestTransformFn, priority = fn.priority || 0): void {
     // Keep the pipeline sorted at all time, by priority.
     const i = this._pipeline.findIndex(x => (x.priority || 0) < priority);
@@ -153,13 +158,22 @@ export class HttpClient {
   }
 
   public async httpGet(endpoint: string, body: Record<string, unknown>): Promise<Response> {
-    const headers: Record<string, string> = this._credentials
+    let headers: Record<string, string> = this._credentials
       ? {
           Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64'),
         }
       : {};
 
-    let url = endpoint;
+    if (this._fetchOptions.headers) {
+      headers = { ...headers, ...(this._fetchOptions.headers as any) };
+    }
+
+    let host = this._host.toString();
+    if (host.endsWith('/')) {
+      host = host.slice(0, host.length - 1);
+    }
+
+    let url = host + endpoint;
     let c = 0;
     for (const id in body) {
       if (c == 0) {
@@ -171,7 +185,11 @@ export class HttpClient {
       c++;
     }
 
-    const response = await this._requestAndRetry(() => this._fetch('' + new URL(`${url}`, this._host), { headers, ...this._fetchOptions }));
+    // throw new Error(JSON.stringify({ url, headers, ...this._fetchOptions, mode: 'cors', cache: 'default' }));
+
+    const response = await this._requestAndRetry(() =>
+      this._fetch(new Request(url), { headers, ...this._fetchOptions, mode: 'cors', cache: 'default' }),
+    );
     return response;
   }
   public async httpPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {

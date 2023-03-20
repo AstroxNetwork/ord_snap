@@ -59,3 +59,11 @@ export async function getAddress(this: MetamaskOrdSnap): Promise<string> {
 export async function addNextAccount(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_addNextAccount' }, this.snapId);
 }
+
+export async function initHttpService(this: MetamaskOrdSnap, host?: string, headers?: Record<string, unknown>): Promise<boolean> {
+  return await sendSnapMethod({ method: 'Ord_initHttpService', params: { host, headers } }, this.snapId);
+}
+
+export async function getAddressUtxo(this: MetamaskOrdSnap, address: string): Promise<string> {
+  return await sendSnapMethod({ method: 'Ord_getAddressUtxo', params: { address } }, this.snapId);
+}

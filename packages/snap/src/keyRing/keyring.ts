@@ -66,14 +66,14 @@ export interface Accounts {
 }
 
 export async function getSignerFromWallet(
-  wallet: SnapsGlobalObject,
+  snap: SnapsGlobalObject,
   opts: TweakOpts = { addressType: AddressType.P2TR, index: 0 },
 ): Promise<SignerInterface> {
   const addressPairs: AddressPair[] = [];
   for (let i = 0; i < ADDRESS_TYPES.length; i += 1) {
     const d = ADDRESS_TYPES[i];
     const path = getDerivePathFromAddressType(d.value);
-    const prv = await getPrivateKeyFromSLIP10(wallet, path, opts.index);
+    const prv = await getPrivateKeyFromSLIP10(snap, path, opts.index);
     const pair = ECPair.fromPrivateKey(Buffer.from(prv), {
       network: toPsbtNetwork(opts.network ?? NetworkType.MAINNET),
     });
@@ -129,23 +129,23 @@ export class OrdKeyring {
   public network: bitcoin.Network = bitcoin.networks.bitcoin;
   public wallets: SignerInterface[] = [];
   private currentIndex = 0;
-  private wallet: SnapsGlobalObject;
+  private snap: SnapsGlobalObject;
   private storage: StorageService;
 
-  constructor(wallet: SnapsGlobalObject) {
-    this.wallet = wallet;
-    this.storage = new StorageService(wallet, 'keyRing');
+  constructor(snap: SnapsGlobalObject) {
+    this.snap = snap;
+    this.storage = new StorageService(snap, 'keyRing');
   }
 
-  static async fromIndex(wallet: SnapsGlobalObject, index?: number): Promise<OrdKeyring> {
-    const ord = new OrdKeyring(wallet);
+  static async fromIndex(snap: SnapsGlobalObject, index?: number): Promise<OrdKeyring> {
+    const ord = new OrdKeyring(snap);
     await ord.addAccounts(index === 0 || index === undefined ? 1 : index);
     await ord.saveWallets();
     return ord;
   }
 
-  static async fromStorage(wallet: SnapsGlobalObject): Promise<OrdKeyring> {
-    const ord = new OrdKeyring(wallet);
+  static async fromStorage(snap: SnapsGlobalObject): Promise<OrdKeyring> {
+    const ord = new OrdKeyring(snap);
     ord.wallets = [];
     const arr = await ord.getWallets();
     if (arr.length > 0) {
@@ -184,7 +184,7 @@ export class OrdKeyring {
   }
 
   async addAccount(index: number) {
-    const signer = await getSignerFromWallet(this.wallet, { index });
+    const signer = await getSignerFromWallet(this.snap, { index });
     if (this.wallets.findIndex(e => e.index === index) === -1) {
       this.wallets.push(signer);
       return true;
@@ -198,7 +198,7 @@ export class OrdKeyring {
     const exist = await this.getAccounts();
     if (exist.length < n) {
       for (let i = 0; i < n; i++) {
-        newWallets.push(await getSignerFromWallet(this.wallet, { index: i }));
+        newWallets.push(await getSignerFromWallet(this.snap, { index: i }));
       }
       this.currentIndex = n;
     } else {

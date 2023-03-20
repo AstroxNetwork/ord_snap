@@ -92,6 +92,21 @@ export interface AddNextAccount {
   method: 'Ord_addNextAccount';
 }
 
+export interface InitHttpService {
+  method: 'Ord_initHttpService';
+  params: {
+    host?: string;
+    headers?: Record<string, unknown>;
+  };
+}
+
+export interface GetAddressUtxo {
+  method: 'Ord_getAddressUtxo';
+  params: {
+    address: string;
+  };
+}
+
 export type MetamaskOrdRpcRequest =
   | ConfigureRequest
   | SignRequest
@@ -102,6 +117,8 @@ export type MetamaskOrdRpcRequest =
   | DecryptMessageRequest
   | GetAddress
   | InitKeyRing
-  | AddNextAccount;
+  | AddNextAccount
+  | InitHttpService
+  | GetAddressUtxo;
 
 type Method = MetamaskOrdRpcRequest['method'];
