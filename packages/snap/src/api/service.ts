@@ -20,7 +20,7 @@ export class HttpService {
   }
 
   static async fromStorage(snap: SnapsGlobalObject) {
-    const options = await new HttpService(snap, { host: 'http://localhost:3000' }).getHttpService();
+    const options = await new HttpService(snap, { host: 'https://astrox.app/api' }).getHttpService();
     const http = new HttpService(snap, options);
     await http.saveHttpService();
     return http;
@@ -44,14 +44,14 @@ export class HttpService {
     return (await data.json()) as BitcoinBalance;
   }
 
-  async getMultiAddressBalance(addresses: string): Promise<BitcoinBalance> {
+  async getMultiAddressBalance(addresses: string): Promise<BitcoinBalance[]> {
     const data = await this.httpClient.httpGet('/v2/address/multi-balance', {
       addresses,
     });
     if (data.status == API_STATUS.FAILED) {
       throw new Error(await data.json());
     }
-    return (await data.json()) as BitcoinBalance;
+    return (await data.json()) as BitcoinBalance[];
   }
 
   async getAddressUtxo(address: string): Promise<UTXO[]> {

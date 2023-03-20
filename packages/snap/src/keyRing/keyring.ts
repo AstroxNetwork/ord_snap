@@ -58,6 +58,7 @@ export interface AddressInterface {
   network: string;
   addressType: string;
   address: string;
+  index: number;
 }
 
 export interface Accounts {
@@ -159,6 +160,10 @@ export class OrdKeyring {
     return ord;
   }
 
+  public getNetworkType(): NetworkType {
+    return this.network === bitcoin.networks.bitcoin ? NetworkType.MAINNET : NetworkType.TESTNET;
+  }
+
   public switchNetwork(networkType: NetworkType): void {
     this.network = toPsbtNetwork(networkType);
   }
@@ -217,6 +222,7 @@ export class OrdKeyring {
           network,
           addressType,
           address: e.address,
+          index: d.index,
         };
       });
       return {
@@ -227,7 +233,7 @@ export class OrdKeyring {
     return hexWallets;
   }
 
-  async getAccounts(): Promise<Accounts[]> {
+  getAccounts(): Accounts[] {
     return this.wallets.map(d => {
       const addresses = d.addressPairs.map(e => {
         const publicKey = e.pair.publicKey.toString('hex');
@@ -238,6 +244,7 @@ export class OrdKeyring {
           network,
           addressType,
           address: e.address,
+          index: d.index,
         };
       });
       return {
@@ -247,7 +254,7 @@ export class OrdKeyring {
     });
   }
 
-  async signTransaction(psbt: bitcoin.Psbt, inputs: { index: number; publicKey: string; sighashTypes?: number[] }[], opts?: TweakOpts) {
+  signTransaction(psbt: bitcoin.Psbt, inputs: { index: number; publicKey: string; sighashTypes?: number[] }[], opts?: TweakOpts): bitcoin.Psbt {
     inputs.forEach(input => {
       const keyPair = this._getPrivateKeyFor(input.publicKey).pair;
       if (isTaprootInput(psbt.data.inputs[input.index])) {
@@ -261,13 +268,13 @@ export class OrdKeyring {
     return psbt;
   }
 
-  async signMessage(publicKey: string, text: string): Promise<string> {
+  signMessage(publicKey: string, text: string): string {
     const keyPair = this._getPrivateKeyFor(publicKey).pair;
     const sig = keyPair.sign(sha256(Buffer.from(text)));
     return sig.toString('hex');
   }
 
-  async verifyMessage(publicKey: string, text: string, sig: string): Promise<boolean> {
+  verifyMessage(publicKey: string, text: string, sig: string): boolean {
     return ecc.verify(sha256(Buffer.from(text)), new Uint8Array(fromHexString(publicKey)), new Uint8Array(fromHexString(sig)));
   }
 
@@ -279,7 +286,7 @@ export class OrdKeyring {
     return wallet;
   }
 
-  async exportAccount(publicKey: string): Promise<string> {
+  exportAccount(publicKey: string): string {
     const wallet = this._getWalletForAccount(publicKey);
     return wallet.pair.privateKey.toString('hex');
   }
@@ -304,10 +311,28 @@ export class OrdKeyring {
   }
 
   public async getAddress(index?: number, addressType?: AddressType, networkType?: NetworkType): Promise<string> {
-    const accounts = await this.getAccounts();
+    const accounts = this.getAccounts();
     const found = accounts
       .find(e => (index !== undefined ? e.index === index : e.index === 0))
       .addresses.find(f => f.addressType === getAddressLabelName(addressType ?? AddressType.P2TR));
     return publicKeyToAddress(found.publicKey, addressType ?? AddressType.P2TR, networkType ?? NetworkType.MAINNET);
+  }
+
+  public getAccount(publicKey?: string): AddressPair {
+    return this._getWalletForAccount(publicKey);
+  }
+
+  public getCurrentAccount(index?: number) {
+    const accounts = this.getAccounts();
+    const adds = accounts.flatMap(a => a.addresses);
+    const found = adds.find(d => d.index === index ?? 0);
+    return this._getWalletForAccount(found.publicKey);
+  }
+
+  private _getWalletFromAddress(address: string): AddressPair {
+    const accounts = this.getAccounts();
+    const adds = accounts.flatMap(a => a.addresses);
+    const found = adds.find(d => d.address === address);
+    return this._getWalletForAccount(found.publicKey);
   }
 }

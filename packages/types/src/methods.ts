@@ -75,10 +75,6 @@ export interface GetPrincipal {
   method: 'Schnorr_getPrincipal';
 }
 
-export interface InitKeyRing {
-  method: 'Ord_initKeyRing';
-}
-
 export interface GetAddress {
   method: 'Ord_getAddress';
   params: {
@@ -92,8 +88,8 @@ export interface AddNextAccount {
   method: 'Ord_addNextAccount';
 }
 
-export interface InitHttpService {
-  method: 'Ord_initHttpService';
+export interface InitWallet {
+  method: 'Ord_initWallet';
   params: {
     host?: string;
     headers?: Record<string, unknown>;
@@ -123,9 +119,8 @@ export type MetamaskOrdRpcRequest =
   | EncryptMessageRequest
   | DecryptMessageRequest
   | GetAddress
-  | InitKeyRing
+  | InitWallet
   | AddNextAccount
-  | InitHttpService
   | GetAddressUtxo
   | GetAddressBalance;
 

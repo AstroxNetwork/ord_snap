@@ -6,7 +6,7 @@ import {
   MetamaskState,
   SignRawMessageRequest,
   SignRequest,
-  InitHttpService,
+  InitWallet,
   GetAddressUtxo,
 } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
@@ -21,6 +21,7 @@ import { OrdKeyring } from './keyRing/keyring';
 // import { OrdKeyring } from './keyring';
 import { sign, signRawMessasge } from './schnorr/sign';
 import { HttpService } from './api/service';
+import { OrdWallet } from './wallet';
 
 declare let snap: SnapsGlobalObject;
 
@@ -74,42 +75,35 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
         (request as unknown as DecryptMessageRequest).params.theirPublicKey,
         (request as unknown as DecryptMessageRequest).params.cipherText,
       );
-    case 'Ord_initKeyRing': {
+    case 'Ord_initWallet': {
+      const http = new HttpService(snap, {
+        host: (request as unknown as InitWallet).params.host,
+        fetchOptions: { headers: (request as unknown as InitWallet).params.headers },
+      });
+
       const kr = await OrdKeyring.fromStorage(snap);
-      // await kr.addAccounts(1);
-      return JSON.stringify(await kr.getAccounts());
+      await kr.saveWallets();
+      await http.saveHttpService();
+      const wallet = new OrdWallet(kr, http);
+      return JSON.stringify(wallet.getAccounts());
     }
     case 'Ord_getAddress': {
-      const kr = await OrdKeyring.fromStorage(snap);
-      return await kr
-        .getAddress
-        // (request as unknown as GetAddress).params.index,
-        // (request as unknown as GetAddress).params.addressType,
-        // (request as unknown as GetAddress).params.networkType,
-        ();
+      const wallet = await OrdWallet.fromStorage(snap);
+      return await wallet.keyRing.getAddress();
     }
     case 'Ord_addNextAccount': {
-      const kr = await OrdKeyring.fromStorage(snap);
-      await kr.addNextAccount();
-      return JSON.stringify(await kr.getAccounts());
-    }
-
-    case 'Ord_initHttpService': {
-      const http = new HttpService(snap, {
-        host: (request as unknown as InitHttpService).params.host,
-        fetchOptions: { headers: (request as unknown as InitHttpService).params.headers },
-      });
-      await http.saveHttpService();
-      return true;
+      const wallet = await OrdWallet.fromStorage(snap);
+      await wallet.keyRing.addNextAccount();
+      return JSON.stringify(wallet.getAccounts());
     }
     case 'Ord_getAddressUtxo': {
-      const http = await HttpService.fromStorage(snap);
-      const utxos = await http.getAddressUtxo((request as unknown as GetAddressUtxo).params.address);
+      const wallet = await OrdWallet.fromStorage(snap);
+      const utxos = await wallet.getAddressUtxo((request as unknown as GetAddressUtxo).params.address);
       return JSON.stringify(utxos);
     }
     case 'Ord_getAddressBalance': {
-      const http = await HttpService.fromStorage(snap);
-      const balance = await http.getAddressBalance((request as unknown as GetAddressUtxo).params.address);
+      const wallet = await OrdWallet.fromStorage(snap);
+      const balance = await wallet.getAddressBalance((request as unknown as GetAddressUtxo).params.address);
       return JSON.stringify(balance);
     }
     default:

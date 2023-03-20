@@ -1,5 +1,9 @@
+import { OrdWallet } from '../wallet';
 import { OrdTransaction, UnspentOutput } from './OrdTransaction';
 import { OrdUnspendOutput, UTXO_DUST } from './OrdUnspendOutput';
+import * as bitcoin from 'bitcoinjs-lib';
+import ecc from '@bitcoinerlab/secp256k1';
+bitcoin.initEccLib(ecc);
 
 export async function createSendBTC({
   utxos,
@@ -15,8 +19,8 @@ export async function createSendBTC({
   utxos: UnspentOutput[];
   toAddress: string;
   toAmount: number;
-  wallet: any;
-  network: any;
+  wallet: OrdWallet;
+  network: bitcoin.Network;
   changeAddress: string;
   force?: boolean;
   feeRate?: number;
@@ -128,8 +132,8 @@ export async function createSendOrd({
   utxos: UnspentOutput[];
   toAddress: string;
   toOrdId: string;
-  wallet: any;
-  network: any;
+  wallet: OrdWallet;
+  network: bitcoin.Network;
   changeAddress: string;
   pubkey: string;
   feeRate?: number;

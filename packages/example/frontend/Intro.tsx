@@ -80,12 +80,6 @@ export function Intro() {
     setMessageDecrypted(JSON.stringify(encrypted))
   }
 
-  const initKeyRing = async () => {
-    console.log(snapIdentity?.api)
-    const kr = await snapIdentity?.api.initKeyRing()
-    console.log(kr)
-  }
-
   const getAddress = async () => {
     console.log(snapIdentity?.api)
     const ad = await snapIdentity?.api.getAddress()
@@ -97,9 +91,9 @@ export function Intro() {
     setAccs(ad)
   }
 
-  const initHttpService = async () => {
+  const initWallet = async () => {
     console.log(snapIdentity?.api)
-    await snapIdentity?.api.initHttpService(host, {
+    await snapIdentity?.api.initWallet(host, {
       "X-Client": "UniSat Wallet",
       "X-Version": "1.1.10",
       "Content-Type": "application/json;charset=utf-8",
@@ -126,8 +120,7 @@ export function Intro() {
         await installSnap()
       } else {
         await getPublicKey()
-        await initKeyRing()
-        await getAddress()
+        // await getAddress()
       }
     })()
   }, [snapIdentity])
@@ -296,8 +289,8 @@ export function Intro() {
                 }}
                 defaultValue={"https://unisat.io/api"}
               />
-              <button className="demo-button" onClick={initHttpService}>
-                Set Http Host
+              <button className="demo-button" onClick={initWallet}>
+                Init Wallet
               </button>
 
               <label style={{ marginBottom: 16, marginTop: 16 }}>

@@ -1,15 +1,4 @@
-export {
-  configure,
-  sign,
-  signRawMessage,
-  getPrincipal,
-  encryptMessage,
-  decryptMessage,
-  initKeyRing,
-  getAddress,
-  addNextAccount,
-  initHttpService,
-} from './methods';
+export { configure, sign, signRawMessage, getPrincipal, encryptMessage, decryptMessage, initWallet, getAddress, addNextAccount } from './methods';
 export { MetamaskOrdSnap, enableOrdSnap, SnapIdentity } from './snap';
 // import './types';
 export * from './types';

@@ -1,11 +1,4 @@
-import {
-  MetamaskOrdRpcRequest,
-  SignRawMessageResponse,
-  SignMessageResponse,
-  EncryptMessageResponse,
-  SnapConfig,
-  InitKeyRing,
-} from '@astrox/ord-snap-types';
+import { MetamaskOrdRpcRequest, SignRawMessageResponse, SignMessageResponse, EncryptMessageResponse, SnapConfig } from '@astrox/ord-snap-types';
 
 import { MetamaskOrdSnap } from './snap';
 import { Signature } from '@dfinity/agent';
@@ -48,10 +41,6 @@ export async function getRawPublicKey(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Schnorr_getRawPublicKey' }, this.snapId);
 }
 
-export async function initKeyRing(this: MetamaskOrdSnap): Promise<string> {
-  return await sendSnapMethod({ method: 'Ord_initKeyRing' }, this.snapId);
-}
-
 export async function getAddress(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_getAddress', params: {} }, this.snapId);
 }
@@ -60,8 +49,8 @@ export async function addNextAccount(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_addNextAccount' }, this.snapId);
 }
 
-export async function initHttpService(this: MetamaskOrdSnap, host?: string, headers?: Record<string, unknown>): Promise<boolean> {
-  return await sendSnapMethod({ method: 'Ord_initHttpService', params: { host, headers } }, this.snapId);
+export async function initWallet(this: MetamaskOrdSnap, host?: string, headers?: Record<string, unknown>): Promise<string> {
+  return await sendSnapMethod({ method: 'Ord_initWallet', params: { host, headers } }, this.snapId);
 }
 
 export async function getAddressUtxo(this: MetamaskOrdSnap, address: string): Promise<string> {

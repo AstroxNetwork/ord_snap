@@ -2,6 +2,9 @@ import { OrdUnspendOutput, UTXO_DUST } from './OrdUnspendOutput';
 import * as bitcoin from 'bitcoinjs-lib';
 import ECPairFactory from 'ecpair';
 import ecc from '@bitcoinerlab/secp256k1';
+import { toXOnly } from '../keyRing/keyring';
+import { AddressType } from '../constant/types';
+import { OrdWallet } from '../wallet';
 bitcoin.initEccLib(ecc);
 const ECPair = ECPairFactory(ecc);
 interface TxInput {
@@ -33,16 +36,8 @@ export interface UnspentOutput {
     offset: number;
   }[];
 }
-export enum AddressType {
-  P2PKH,
-  P2WPKH,
-  P2TR,
-  P2SH_P2WPKH,
-  M44_P2WPKH,
-  M44_P2TR,
-}
 
-export const toXOnly = (pubKey: Buffer) => (pubKey.length === 32 ? pubKey : pubKey.slice(1, 33));
+// export const toXOnly = (pubKey: Buffer) => (pubKey.length === 32 ? pubKey : pubKey.slice(1, 33));
 
 export function utxoToInput(utxo: UnspentOutput, publicKey: Buffer): TxInput {
   if (utxo.addressType === AddressType.P2TR || utxo.addressType === AddressType.M44_P2TR) {
@@ -107,12 +102,12 @@ export class OrdTransaction {
   private inputs: TxInput[] = [];
   public outputs: TxOutput[] = [];
   private changeOutputIndex = -1;
-  private wallet: any;
+  private wallet: OrdWallet;
   public changedAddress: string;
   private network: bitcoin.Network = bitcoin.networks.bitcoin;
   private feeRate: number;
   private pubkey: string;
-  constructor(wallet: any, network: any, pubkey: string, feeRate?: number) {
+  constructor(wallet: OrdWallet, network: bitcoin.Network, pubkey: string, feeRate?: number) {
     this.wallet = wallet;
     this.network = network;
     this.pubkey = pubkey;
@@ -234,7 +229,7 @@ export class OrdTransaction {
       psbt.addOutput(v);
     });
 
-    await this.wallet.signPsbt(psbt);
+    this.wallet.signPsbt(psbt);
 
     return psbt;
   }
@@ -274,45 +269,45 @@ export class OrdTransaction {
     };
   }
 
-  async dumpTx(psbt) {
-    const tx = psbt.extractTransaction();
-    const size = tx.toBuffer().length;
-    const feePaid = psbt.getFee();
-    const feeRate = (feePaid / size).toFixed(4);
+  //   async dumpTx(psbt) {
+  //     const tx = psbt.extractTransaction();
+  //     const size = tx.toBuffer().length;
+  //     const feePaid = psbt.getFee();
+  //     const feeRate = (feePaid / size).toFixed(4);
 
-    console.log(`
-=============================================================================================
-Summary
-  txid:     ${tx.getId()}
-  Size:     ${tx.byteLength()}
-  Fee Paid: ${psbt.getFee()}
-  Fee Rate: ${feeRate} sat/B
-  Detail:   ${psbt.txInputs.length} Inputs, ${psbt.txOutputs.length} Outputs
-----------------------------------------------------------------------------------------------
-Inputs
-${this.inputs
-  .map((input, index) => {
-    const str = `
-=>${index} ${input.data.witnessUtxo.value} Sats
-        lock-size: ${input.data.witnessUtxo.script.length}
-        via ${input.data.hash} [${input.data.index}]
-`;
-    return str;
-  })
-  .join('')}
-total: ${this.getTotalInput()} Sats
-----------------------------------------------------------------------------------------------
-Outputs
-${this.outputs
-  .map((output, index) => {
-    const str = `
-=>${index} ${output.value} Sats`;
-    return str;
-  })
-  .join('')}
+  //     console.log(`
+  // =============================================================================================
+  // Summary
+  //   txid:     ${tx.getId()}
+  //   Size:     ${tx.byteLength()}
+  //   Fee Paid: ${psbt.getFee()}
+  //   Fee Rate: ${feeRate} sat/B
+  //   Detail:   ${psbt.txInputs.length} Inputs, ${psbt.txOutputs.length} Outputs
+  // ----------------------------------------------------------------------------------------------
+  // Inputs
+  // ${this.inputs
+  //   .map((input, index) => {
+  //     const str = `
+  // =>${index} ${input.data.witnessUtxo.value} Sats
+  //         lock-size: ${input.data.witnessUtxo.script.length}
+  //         via ${input.data.hash} [${input.data.index}]
+  // `;
+  //     return str;
+  //   })
+  //   .join('')}
+  // total: ${this.getTotalInput()} Sats
+  // ----------------------------------------------------------------------------------------------
+  // Outputs
+  // ${this.outputs
+  //   .map((output, index) => {
+  //     const str = `
+  // =>${index} ${output.value} Sats`;
+  //     return str;
+  //   })
+  //   .join('')}
 
-total: ${this.getTotalOutput() - feePaid} Sats
-=============================================================================================
-    `);
-  }
+  // total: ${this.getTotalOutput() - feePaid} Sats
+  // =============================================================================================
+  //     `);
+  //   }
 }
