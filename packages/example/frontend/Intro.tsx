@@ -157,7 +157,7 @@ export function Intro() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p style={{ fontSize: "2em", marginBottom: "0.5em" }}>
-          Bitcoin Ecosystem in MetaMask
+          OrdSnap: Bitcoin in MetaMask
         </p>
         <h1>Wallet</h1>
         <div
@@ -185,7 +185,7 @@ export function Intro() {
                 <code>Current Accounts: </code>
                 <p>{accs}</p>
               </div>
-              <button className="demo-button" onClick={addNextAccount}>
+              <button className="demo-button-2" onClick={addNextAccount}>
                 Add Account
               </button>
 
@@ -200,7 +200,7 @@ export function Intro() {
                 }}
                 defaultValue={"https://unisat.io/api"}
               />
-              <button className="demo-button" onClick={initWallet}>
+              <button className="demo-button-2" onClick={initWallet}>
                 Init Wallet
               </button>
 
@@ -215,10 +215,10 @@ export function Intro() {
                 }}
                 defaultValue={utxoAddress ?? accs}
               />
-              <button className="demo-button" onClick={getAddressUtxos}>
+              <button className="demo-button-2" onClick={getAddressUtxos}>
                 Get UTXOS
               </button>
-              <button className="demo-button" onClick={getAddressBalance}>
+              <button className="demo-button-2" onClick={getAddressBalance}>
                 Get Balance
               </button>
               <label style={{ marginBottom: 16, marginTop: 16 }}>
@@ -274,7 +274,7 @@ export function Intro() {
                   false
                 </option>
               </select>
-              <button className="demo-button" onClick={sendBTC}>
+              <button className="demo-button-2" onClick={sendBTC}>
                 Send BTC
               </button>
             </>
