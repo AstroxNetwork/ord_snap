@@ -4,9 +4,9 @@
 
 An Metamask Flask Snap Plugin, it does:
 
-1. Use Metamask as your bitcoin wallet
-2. Send/Receive Bitcoin (WIP)
-3. Send/Receive/Inscribe Ordinals (WIP)
+1. Use Metamask as your bitcoin wallet [x]
+2. Send/Receive Bitcoin [x]
+3. Send/Receive/~~Inscribe~~ Ordinals [x]
 4. Use Lightning Network (WIP)
 5. Use Nostr (WIP)
 
@@ -19,6 +19,10 @@ yarn install && yarn build:all && yarn demo:local
 ## Example code,
 
 In [packages/example/frontend/Intro.tsx](./packages/example/frontend/Intro.tsx)
+
+## Documentation
+
+WIP
 
 ## Components and install instructions
 

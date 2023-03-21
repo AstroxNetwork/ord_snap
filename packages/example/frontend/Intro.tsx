@@ -157,8 +157,9 @@ export function Intro() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p style={{ fontSize: "2em", marginBottom: "0.5em" }}>
-          Ready. Lets use Snap
+          Bitcoin Ecosystem in MetaMask
         </p>
+        <h1>Wallet</h1>
         <div
           style={{
             display: "flex",
@@ -172,124 +173,6 @@ export function Intro() {
             width: "32em",
           }}
         >
-          {installed ? (
-            <div style={{ width: "100%", minWidth: "100%" }}>
-              <code>PublicKey is:</code>
-              <p>{publicKey ?? "...loading"}</p>
-            </div>
-          ) : (
-            <button className="demo-button" onClick={installSnap}>
-              Install Snap
-            </button>
-          )}
-          {installed ? (
-            <>
-              <label style={{ marginBottom: 16 }}>Input Messsage To Sign</label>
-              <input
-                aria-label="To Sign a message"
-                style={{ padding: "1em" }}
-                onChange={(e) => {
-                  setMessage(e.target.value)
-                }}
-              />
-              <button className="demo-button" onClick={signMessage}>
-                Sign Message
-              </button>
-            </>
-          ) : null}
-          {signedMessage?.signature !== undefined ? (
-            <div
-              style={{
-                wordBreak: "break-all",
-                maxWidth: "100%",
-                margin: "1em 0",
-              }}
-            >
-              <code>Signature is : </code>
-              <p>{signedMessage?.signature}</p>
-            </div>
-          ) : null}
-
-          <h2>Encrypt Message</h2>
-          {installed ? (
-            <>
-              <label style={{ marginBottom: 16 }}>
-                Input Message To Encrypt
-              </label>
-              <input
-                aria-label="To Encrypt a message"
-                style={{ padding: "1em" }}
-                onChange={(e) => {
-                  setToEncryptMessage(e.target.value)
-                }}
-              />
-              <label style={{ marginBottom: 16 }}>Input Their PublicKey</label>
-              <input
-                aria-label="We need their publicKey"
-                style={{ padding: "1em" }}
-                onChange={(e) => {
-                  setTheirPublicKey(e.target.value)
-                }}
-              />
-              <button className="demo-button" onClick={encryptMessage}>
-                Encrypt Message
-              </button>
-            </>
-          ) : null}
-          {messageEncrypted !== undefined ? (
-            <div
-              style={{
-                wordBreak: "break-all",
-                maxWidth: "100%",
-                margin: "1em 0",
-              }}
-            >
-              <code>Encrypted Message is : </code>
-              <p>{messageEncrypted}</p>
-            </div>
-          ) : null}
-
-          <h2>Decrypt Message</h2>
-          {installed ? (
-            <>
-              <label style={{ marginBottom: 16 }}>
-                Input CipherText To Decrypt
-              </label>
-              <input
-                aria-label="To Decrypt a message"
-                style={{ padding: "1em" }}
-                onChange={(e) => {
-                  setToDecryptMessage(e.target.value)
-                }}
-              />
-              <label style={{ marginBottom: 16 }}>Input Their PublicKey</label>
-              <input
-                aria-label="We need their publicKey"
-                style={{ padding: "1em" }}
-                onChange={(e) => {
-                  setTheirDecryptPublicKey(e.target.value)
-                }}
-              />
-              <button className="demo-button" onClick={decryptMessage}>
-                Decrypt Message
-              </button>
-            </>
-          ) : null}
-
-          {messageDecrypted !== undefined ? (
-            <div
-              style={{
-                wordBreak: "break-all",
-                maxWidth: "100%",
-                margin: "1em 0",
-              }}
-            >
-              <code>Decrypted Message is : </code>
-              <p>{messageDecrypted}</p>
-            </div>
-          ) : null}
-
-          <h2>Wallet</h2>
           {installed ? (
             <>
               <div
@@ -397,10 +280,141 @@ export function Intro() {
             </>
           ) : null}
         </div>
+        <h1>Nostr</h1>
+        <div
+          style={{
+            display: "flex",
+            fontSize: "0.7em",
+            textAlign: "left",
+            padding: "2em",
+            borderRadius: "30px",
+            flexDirection: "column",
+            background: "rgb(220 218 224 / 25%)",
+            flex: 1,
+            width: "32em",
+          }}
+        >
+          {installed ? (
+            <div style={{ width: "100%", minWidth: "100%" }}>
+              <code>PublicKey is:</code>
+              <p style={{ fontSize: 16 }}>{publicKey ?? "...loading"}</p>
+            </div>
+          ) : (
+            <button className="demo-button" onClick={installSnap}>
+              Install Snap
+            </button>
+          )}
 
-        <p style={{ fontSize: "0.6em" }}>
-          SchnorrSnap is running inside metamask
-        </p>
+          {installed ? (
+            <>
+              <h2>Encrypt Message</h2>
+              <label style={{ marginBottom: 16 }}>Input Messsage To Sign</label>
+              <input
+                aria-label="To Sign a message"
+                style={{ padding: "1em" }}
+                onChange={(e) => {
+                  setMessage(e.target.value)
+                }}
+              />
+              <button className="demo-button" onClick={signMessage}>
+                Sign Message
+              </button>
+            </>
+          ) : null}
+          {signedMessage?.signature !== undefined ? (
+            <div
+              style={{
+                wordBreak: "break-all",
+                maxWidth: "100%",
+                margin: "1em 0",
+              }}
+            >
+              <code>Signature is : </code>
+              <p>{signedMessage?.signature}</p>
+            </div>
+          ) : null}
+
+          <h2>Encrypt Message</h2>
+          {installed ? (
+            <>
+              <label style={{ marginBottom: 16 }}>
+                Input Message To Encrypt
+              </label>
+              <input
+                aria-label="To Encrypt a message"
+                style={{ padding: "1em" }}
+                onChange={(e) => {
+                  setToEncryptMessage(e.target.value)
+                }}
+              />
+              <label style={{ marginBottom: 16 }}>Input Their PublicKey</label>
+              <input
+                aria-label="We need their publicKey"
+                style={{ padding: "1em" }}
+                onChange={(e) => {
+                  setTheirPublicKey(e.target.value)
+                }}
+              />
+              <button className="demo-button" onClick={encryptMessage}>
+                Encrypt Message
+              </button>
+            </>
+          ) : null}
+          {messageEncrypted !== undefined ? (
+            <div
+              style={{
+                wordBreak: "break-all",
+                maxWidth: "100%",
+                margin: "1em 0",
+              }}
+            >
+              <code>Encrypted Message is : </code>
+              <p>{messageEncrypted}</p>
+            </div>
+          ) : null}
+
+          <h2>Decrypt Message</h2>
+          {installed ? (
+            <>
+              <label style={{ marginBottom: 16 }}>
+                Input CipherText To Decrypt
+              </label>
+              <input
+                aria-label="To Decrypt a message"
+                style={{ padding: "1em" }}
+                onChange={(e) => {
+                  setToDecryptMessage(e.target.value)
+                }}
+              />
+              <label style={{ marginBottom: 16 }}>Input Their PublicKey</label>
+              <input
+                aria-label="We need their publicKey"
+                style={{ padding: "1em" }}
+                onChange={(e) => {
+                  setTheirDecryptPublicKey(e.target.value)
+                }}
+              />
+              <button className="demo-button" onClick={decryptMessage}>
+                Decrypt Message
+              </button>
+            </>
+          ) : null}
+
+          {messageDecrypted !== undefined ? (
+            <div
+              style={{
+                wordBreak: "break-all",
+                maxWidth: "100%",
+                margin: "1em 0",
+              }}
+            >
+              <code>Decrypted Message is : </code>
+              <p>{messageDecrypted}</p>
+            </div>
+          ) : null}
+        </div>
+
+        <p style={{ fontSize: "0.6em" }}>Documentations are WIP</p>
       </header>
       <footer>
         <div
