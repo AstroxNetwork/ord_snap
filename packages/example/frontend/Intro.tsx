@@ -2,7 +2,7 @@ import React, { createFactory, useCallback, useEffect, useState } from "react"
 import logo from "./assets/logo-dark.svg"
 import { initiateOrdSnap } from "./services/metamask"
 import { SnapIdentity } from "@astrox/ord-snap-adapter"
-import { SignMessageResponse } from "@astrox/ord-snap-types"
+import { SignMessageResponse, UTXO } from "@astrox/ord-snap-types"
 // import { canisterId, createActor } from "./services"
 
 export function Intro() {
@@ -44,6 +44,11 @@ export function Intro() {
   const [host, setHost] = useState<string | undefined>("https://unisat.io/api")
 
   const [utxoAddress, setUtxoAddress] = useState<string | undefined>(undefined)
+  // to: string, amount: number, utxos: UTXO[], autoAdjust: boolean, feeRate: number
+  const [sendTo, setSendTo] = useState<string | undefined>(undefined)
+  const [sendAmount, setSendAmount] = useState<number | undefined>(undefined)
+  const [sendAutoAdjust, setAutoAdjust] = useState<boolean>(true)
+  const [sendFeeRate, setSendFeeRate] = useState<number | undefined>(undefined)
 
   const installSnap = useCallback(async () => {
     const installResult = await initiateOrdSnap("nostr") //mainnet, local, nostr
@@ -88,7 +93,29 @@ export function Intro() {
   const addNextAccount = async () => {
     console.log(snapIdentity?.api)
     const ad = await snapIdentity?.api.addNextAccount()
-    setAccs(ad)
+    console.log(ad)
+  }
+
+  const sendBTC = async () => {
+    const account = await snapIdentity?.api.getAddress()
+
+    const sendUtxos = await snapIdentity?.api.getAddressUtxo(account!)
+    console.log({
+      sendTo,
+      sendAmount,
+      sendUtxos: JSON.parse(sendUtxos!).result as UTXO[],
+      sendAutoAdjust,
+      sendFeeRate,
+    })
+
+    const tx = await snapIdentity?.api.sendBTC(
+      sendTo!,
+      sendAmount!,
+      JSON.parse(sendUtxos!).result as UTXO[],
+      sendAutoAdjust!,
+      sendFeeRate!,
+    )
+    console.log(tx)
   }
 
   const initWallet = async () => {
@@ -120,7 +147,8 @@ export function Intro() {
         await installSnap()
       } else {
         await getPublicKey()
-        // await getAddress()
+        await initWallet()
+        await getAddress()
       }
     })()
   }, [snapIdentity])
@@ -261,7 +289,7 @@ export function Intro() {
             </div>
           ) : null}
 
-          <h2>Add Account</h2>
+          <h2>Wallet</h2>
           {installed ? (
             <>
               <div
@@ -309,6 +337,62 @@ export function Intro() {
               </button>
               <button className="demo-button" onClick={getAddressBalance}>
                 Get Balance
+              </button>
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Send BTC To
+              </label>
+              <input
+                aria-label="to"
+                style={{ padding: "1em" }}
+                onChange={async (e) => {
+                  setSendTo(e.target.value)
+                }}
+              />
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Send BTC Amount
+              </label>
+              <input
+                aria-label="amount"
+                style={{ padding: "1em" }}
+                type="number"
+                onChange={async (e) => {
+                  setSendAmount(Number.parseInt(e.target.value, 10))
+                }}
+              />
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Send BTC Fee Rate
+              </label>
+              <input
+                aria-label="feeRate"
+                style={{ padding: "1em" }}
+                type="number"
+                onChange={async (e) => {
+                  setSendFeeRate(Number.parseInt(e.target.value, 10))
+                }}
+              />
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Send BTC AutoAdjust?
+              </label>
+              <select
+                aria-label="autoAdust"
+                name="autoAdust"
+                id="autoAdust"
+                style={{ marginBottom: 16, marginTop: 16, fontSize: 16 }}
+                onChange={(e) => {
+                  const sel = e.target.value === "true" ? true : false
+                  setAutoAdjust(sel)
+                }}
+                defaultValue={"true"}
+              >
+                <option value="true" style={{ padding: 8 }}>
+                  true
+                </option>
+                <option value="false" style={{ padding: 8 }}>
+                  false
+                </option>
+              </select>
+              <button className="demo-button" onClick={sendBTC}>
+                Send BTC
               </button>
             </>
           ) : null}

@@ -302,7 +302,7 @@ export class OrdKeyring {
 
   private _getWalletForAccount(publicKey: string): AddressPair {
     const pairs = this.wallets.flatMap(e => e.addressPairs);
-    let wallet = pairs.find(wallet => wallet.pair.publicKey.toString('hex') == publicKey);
+    let wallet = pairs.find(wallet => wallet.pair.publicKey.toString('hex') === publicKey);
     if (!wallet) {
       throw new Error('Simple Keyring - Unable to find matching publicKey.');
     }
@@ -321,7 +321,7 @@ export class OrdKeyring {
     return this._getWalletForAccount(publicKey);
   }
 
-  public getCurrentAccount(index?: number) {
+  public getCurrentAccount(index: number = 0) {
     const accounts = this.getAccounts();
     const adds = accounts.flatMap(a => a.addresses);
     const found = adds.find(d => d.index === index ?? 0);
