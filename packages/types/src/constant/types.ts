@@ -143,3 +143,9 @@ export interface Account {
   index?: number;
   balance?: number;
 }
+
+export interface TXSendBTC {
+  psbtHex: string;
+  rawTx: string;
+  txId: string;
+}

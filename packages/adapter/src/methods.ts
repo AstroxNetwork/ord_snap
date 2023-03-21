@@ -1,4 +1,12 @@
-import { MetamaskOrdRpcRequest, SignRawMessageResponse, SignMessageResponse, EncryptMessageResponse, SnapConfig, UTXO } from '@astrox/ord-snap-types';
+import {
+  MetamaskOrdRpcRequest,
+  SignRawMessageResponse,
+  SignMessageResponse,
+  EncryptMessageResponse,
+  SnapConfig,
+  UTXO,
+  TXSendBTC,
+} from '@astrox/ord-snap-types';
 
 import { MetamaskOrdSnap } from './snap';
 import { Signature } from '@dfinity/agent';
@@ -68,6 +76,6 @@ export async function sendBTC(
   utxos: UTXO[],
   autoAdjust: boolean,
   feeRate: number,
-): Promise<string> {
+): Promise<TXSendBTC> {
   return await sendSnapMethod({ method: 'Ord_sendBTC', params: { to, amount, utxos, autoAdjust, feeRate } }, this.snapId);
 }

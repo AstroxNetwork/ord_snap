@@ -193,24 +193,32 @@ export class HttpClient {
     return response;
   }
   public async httpPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {
+    let host = this._host.toString();
+    if (host.endsWith('/')) {
+      host = host.slice(0, host.length - 1);
+    }
+
+    let url = host + endpoint;
     const payload = {
       request: {
         method: 'POST',
         headers: new Headers({
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json;charset=utf-8',
           ...(this._fetchOptions.headers as any),
           ...(this._credentials ? { Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64') } : {}),
         }),
       },
       endpoint,
-      body,
+      body: JSON.stringify(body),
     };
     const transformed = await this._transform(payload);
 
     const response = await this._requestAndRetry(() =>
-      this._fetch('' + new URL(`${endpoint}`, this._host), {
+      this._fetch(new Request(url), {
         ...this._callOptions,
         ...payload.request,
+        mode: 'cors',
+        cache: 'default',
         body: transformed.body,
       }),
     );

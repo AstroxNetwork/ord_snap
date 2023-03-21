@@ -2,7 +2,7 @@ import React, { createFactory, useCallback, useEffect, useState } from "react"
 import logo from "./assets/logo-dark.svg"
 import { initiateOrdSnap } from "./services/metamask"
 import { SnapIdentity } from "@astrox/ord-snap-adapter"
-import { SignMessageResponse, UTXO } from "@astrox/ord-snap-types"
+import { SignMessageResponse, UTXO, TXSendBTC } from "@astrox/ord-snap-types"
 // import { canisterId, createActor } from "./services"
 
 export function Intro() {

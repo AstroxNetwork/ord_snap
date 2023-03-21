@@ -4,7 +4,7 @@ import { address as PsbtAddress } from 'bitcoinjs-lib';
 import { HttpService } from '../api/service';
 import { Accounts, OrdKeyring, toXOnly } from '../keyRing/keyring';
 
-import { AddressType, BitcoinBalance, Inscription, NetworkType, ToSignInput, TxHistoryItem, UTXO } from '@astrox/ord-snap-types';
+import { AddressType, BitcoinBalance, Inscription, NetworkType, ToSignInput, TxHistoryItem, UTXO, TXSendBTC } from '@astrox/ord-snap-types';
 import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES } from '@astrox/ord-snap-types';
 import { toPsbtNetwork, validator } from '../snap/util';
 import { createSendBTC } from '../ord/ord';
@@ -151,7 +151,7 @@ export class OrdWallet {
     utxos: UTXO[];
     autoAdjust: boolean;
     feeRate: number;
-  }): Promise<string> => {
+  }): Promise<TXSendBTC> => {
     const account = this.keyRing.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
@@ -190,7 +190,13 @@ export class OrdWallet {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
-      return psbt.toHex();
+      const rawTx = psbt.extractTransaction().toHex();
+      const txId = await this.pushTx(rawTx);
+      return {
+        txId,
+        psbtHex: psbt.toHex(),
+        rawTx,
+      };
     } else {
       throwError({
         message: 'User Reject',
@@ -200,9 +206,9 @@ export class OrdWallet {
     }
   };
 
-  pushTx = async (rawtx: string) => {
+  pushTx = async (rawtx: string): Promise<string> => {
     const txid = await this.httpService.pushTx(rawtx);
-    return txid;
+    return JSON.parse(txid).result as string;
   };
 
   queryDomainInfo = async (domain: string) => {
