@@ -3,7 +3,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import ECPairFactory from 'ecpair';
 import ecc from '@bitcoinerlab/secp256k1';
 
-import { AddressType, NetworkType } from '../constant/types';
+import { AddressType, NetworkType } from '@astrox/ord-snap-types';
 
 bitcoin.initEccLib(ecc);
 const ECPair = ECPairFactory(ecc);

@@ -1,3 +1,4 @@
+import { UTXO } from './constant/types';
 import { SnapConfig } from './snap';
 
 export abstract class WalletMethod {
@@ -110,6 +111,17 @@ export interface GetAddressBalance {
   };
 }
 
+export interface SendBTC {
+  method: 'Ord_sendBTC';
+  params: {
+    to: string;
+    amount: number;
+    utxos: UTXO[];
+    autoAdjust: boolean;
+    feeRate: number;
+  };
+}
+
 export type MetamaskOrdRpcRequest =
   | ConfigureRequest
   | SignRequest
@@ -122,6 +134,7 @@ export type MetamaskOrdRpcRequest =
   | InitWallet
   | AddNextAccount
   | GetAddressUtxo
-  | GetAddressBalance;
+  | GetAddressBalance
+  | SendBTC;
 
 type Method = MetamaskOrdRpcRequest['method'];

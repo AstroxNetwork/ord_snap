@@ -9,8 +9,7 @@ import { getPrivateKeyFromSLIP10 } from '../snap/base';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { sha256 } from 'bitcoinjs-lib/src/crypto';
 import { fromHexString, publicKeyToAddress, toPsbtNetwork } from '../snap/util';
-import { AddressType, NetworkType } from '../constant/types';
-import { ADDRESS_TYPES } from '../constant/constant';
+import { AddressType, NetworkType, ADDRESS_TYPES } from '@astrox/ord-snap-types';
 import { StorageService } from '../snap/storage';
 
 bitcoin.initEccLib(ecc);

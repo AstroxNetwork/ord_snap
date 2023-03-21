@@ -1,6 +1,6 @@
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { StorageService } from '../snap/storage';
-import { FeeSummary, InscriptionSummary, Inscription, UTXO, TxHistoryItem, AppSummary, BitcoinBalance } from '../constant/types';
+import { FeeSummary, InscriptionSummary, Inscription, UTXO, TxHistoryItem, AppSummary, BitcoinBalance } from '@astrox/ord-snap-types';
 
 import { HttpAgentOptions, HttpClient } from './http';
 

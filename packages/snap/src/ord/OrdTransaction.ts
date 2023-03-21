@@ -3,7 +3,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import ECPairFactory from 'ecpair';
 import ecc from '@bitcoinerlab/secp256k1';
 import { toXOnly } from '../keyRing/keyring';
-import { AddressType } from '../constant/types';
+import { AddressType } from '@astrox/ord-snap-types';
 import { OrdWallet } from '../wallet';
 bitcoin.initEccLib(ecc);
 const ECPair = ECPairFactory(ecc);

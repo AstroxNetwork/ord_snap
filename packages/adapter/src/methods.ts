@@ -1,4 +1,4 @@
-import { MetamaskOrdRpcRequest, SignRawMessageResponse, SignMessageResponse, EncryptMessageResponse, SnapConfig } from '@astrox/ord-snap-types';
+import { MetamaskOrdRpcRequest, SignRawMessageResponse, SignMessageResponse, EncryptMessageResponse, SnapConfig, UTXO } from '@astrox/ord-snap-types';
 
 import { MetamaskOrdSnap } from './snap';
 import { Signature } from '@dfinity/agent';
@@ -59,4 +59,15 @@ export async function getAddressUtxo(this: MetamaskOrdSnap, address: string): Pr
 
 export async function getAddressBalance(this: MetamaskOrdSnap, address: string): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_getAddressBalance', params: { address } }, this.snapId);
+}
+
+export async function sendBTC(
+  this: MetamaskOrdSnap,
+  to: string,
+  amount: number,
+  utxos: UTXO[],
+  autoAdjust: boolean,
+  feeRate: number,
+): Promise<string> {
+  return await sendSnapMethod({ method: 'Ord_sendBTC', params: { to, amount, utxos, autoAdjust, feeRate } }, this.snapId);
 }

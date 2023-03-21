@@ -1,3 +1,4 @@
+import { UTXO } from './constant/types';
 import { MetamaskOrdRpcRequest } from './methods';
 import { EncryptMessageResponse, SignMessageResponse, SignRawMessageResponse } from './wallet';
 
@@ -48,4 +49,5 @@ export interface OrdSnapApi {
   addNextAccount(): Promise<string>;
   getAddressUtxo(address: string): Promise<string>;
   getAddressBalance(address: string): Promise<string>;
+  sendBTC(to: string, amount: number, utxos: UTXO[], autoAdjust: boolean, feeRate: number): Promise<string>;
 }

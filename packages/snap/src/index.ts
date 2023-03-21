@@ -8,6 +8,7 @@ import {
   SignRequest,
   InitWallet,
   GetAddressUtxo,
+  SendBTC,
 } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { OnRpcRequestHandler } from '@metamask/snaps-types';
@@ -105,6 +106,14 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       const wallet = await OrdWallet.fromStorage(snap);
       const balance = await wallet.getAddressBalance((request as unknown as GetAddressUtxo).params.address);
       return JSON.stringify(balance);
+    }
+    case 'Ord_sendBTC': {
+      const wallet = await OrdWallet.fromStorage(snap);
+
+      const tx = await wallet.sendBTC({
+        ...(request as unknown as SendBTC).params,
+      });
+      return tx;
     }
     default:
       throw new Error('Unsupported RPC method');

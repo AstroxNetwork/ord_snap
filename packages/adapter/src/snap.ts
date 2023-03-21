@@ -13,6 +13,7 @@ import {
   initWallet,
   getAddressUtxo,
   getAddressBalance,
+  sendBTC,
 } from './methods';
 
 export interface SnapIdentity {
@@ -52,6 +53,7 @@ export class MetamaskOrdSnap {
       initWallet: initWallet.bind(this),
       getAddressUtxo: getAddressUtxo.bind(this),
       getAddressBalance: getAddressBalance.bind(this),
+      sendBTC: sendBTC.bind(this),
     };
   };
 }

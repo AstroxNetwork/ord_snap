@@ -4,8 +4,8 @@ import { address as PsbtAddress } from 'bitcoinjs-lib';
 import { HttpService } from '../api/service';
 import { Accounts, OrdKeyring, toXOnly } from '../keyRing/keyring';
 
-import { AddressType, BitcoinBalance, Inscription, NetworkType, ToSignInput, TxHistoryItem, UTXO } from '../constant/types';
-import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES } from '../constant/constant';
+import { AddressType, BitcoinBalance, Inscription, NetworkType, ToSignInput, TxHistoryItem, UTXO } from '@astrox/ord-snap-types';
+import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES } from '@astrox/ord-snap-types';
 import { toPsbtNetwork, validator } from '../snap/util';
 import { createSendBTC } from '../ord/ord';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
@@ -147,7 +147,7 @@ export class OrdWallet {
     utxos: UTXO[];
     autoAdjust: boolean;
     feeRate: number;
-  }) => {
+  }): Promise<string> => {
     const account = this.keyRing.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
