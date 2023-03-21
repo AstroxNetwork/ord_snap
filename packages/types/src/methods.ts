@@ -13,6 +13,7 @@ export const OrdCoinCode = 0;
 
 export abstract class SnapMethods {
   static confirm: string = 'snap_confirm';
+  static dialog: string = 'snap_dialog';
   static manageState: string = 'snap_manageState';
   static getBip44Entropy: string = `snap_getBip44Entropy_${OrdCoinCode}`;
 }

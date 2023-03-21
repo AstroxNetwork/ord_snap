@@ -1,9 +1,9 @@
 {
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "The ord snap.",
   "proposedName": "OrdSnap",
   "source": {
-    "shasum": "T9wvlCgE+2/pCq5JtW0Yao+4O2IjQ+dxD8Tx+7UjAPA=",
+    "shasum": "KAlqhJMKLwv1PPWq5++kT4r8EUiZ/MjY5iARQjViIks=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -19,6 +19,7 @@
       "snaps": true
     },
     "snap_confirm": {},
+    "snap_dialog": {},
     "snap_getBip44Entropy": [
       {
         "coinType": 1

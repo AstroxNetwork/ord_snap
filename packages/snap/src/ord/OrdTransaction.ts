@@ -5,6 +5,7 @@ import ecc from '@bitcoinerlab/secp256k1';
 import { toXOnly } from '../keyRing/keyring';
 import { AddressType } from '@astrox/ord-snap-types';
 import { OrdWallet } from '../wallet';
+
 bitcoin.initEccLib(ecc);
 const ECPair = ECPairFactory(ecc);
 interface TxInput {
@@ -152,7 +153,6 @@ export class OrdTransaction {
         return;
       }
     }
-
     const psbt1 = await this.createSignedPsbt();
     let txSize = psbt1.extractTransaction().toBuffer().length;
     psbt1.data.inputs.forEach(v => {
@@ -215,7 +215,8 @@ export class OrdTransaction {
   }
 
   async createSignedPsbt() {
-    const psbt = new bitcoin.Psbt({ network: this.network });
+    let psbt = new bitcoin.Psbt({ network: this.network });
+
     this.inputs.forEach((v, index) => {
       if (v.utxo.addressType === AddressType.P2PKH) {
         //@ts-ignore
@@ -228,8 +229,7 @@ export class OrdTransaction {
     this.outputs.forEach(v => {
       psbt.addOutput(v);
     });
-
-    this.wallet.signPsbt(psbt);
+    psbt = this.wallet.signPsbt(psbt);
 
     return psbt;
   }

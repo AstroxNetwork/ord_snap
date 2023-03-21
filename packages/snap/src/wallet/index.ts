@@ -11,6 +11,8 @@ import { createSendBTC } from '../ord/ord';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { HttpAgentOptions } from '../api/http';
 import { OrdTransaction } from '../ord/OrdTransaction';
+import { showConfirmationDialog, showConfirmationDialogV2 } from '../snap/confirmation';
+import { throwError } from '../snap/errors';
 
 export type AccountAsset = {
   name: string;
@@ -20,12 +22,12 @@ export type AccountAsset = {
 };
 
 export class OrdWallet {
-  constructor(public keyRing: OrdKeyring, public httpService: HttpService) {}
+  constructor(private snap: SnapsGlobalObject, public keyRing: OrdKeyring, public httpService: HttpService) {}
 
   static async fromStorage(snap: SnapsGlobalObject) {
     const http = await HttpService.fromStorage(snap);
     const kr = await OrdKeyring.fromStorage(snap);
-    const wallet = new OrdWallet(kr, http);
+    const wallet = new OrdWallet(snap, kr, http);
     return wallet;
   }
 
@@ -84,6 +86,7 @@ export class OrdWallet {
       const isSigned = v.finalScriptSig || v.finalScriptWitness;
       if (script && !isSigned) {
         const address = PsbtAddress.fromOutputScript(script, psbtNetwork);
+
         if (account.address === address) {
           toSignInputs.push({
             index,
@@ -97,12 +100,13 @@ export class OrdWallet {
       }
     });
 
-    psbt = this.keyRing.signTransaction(psbt, toSignInputs);
+    let psbt2 = this.keyRing.signTransaction(psbt, toSignInputs);
     toSignInputs.forEach(v => {
-      psbt.validateSignaturesOfInput(v.index, validator);
-      psbt.finalizeInput(v.index);
+      psbt2.validateSignaturesOfInput(v.index, validator);
+      psbt2.finalizeInput(v.index);
     });
-    return psbt;
+
+    return psbt2;
   };
 
   signMessage = (text: string): string => {
@@ -154,32 +158,46 @@ export class OrdWallet {
     const networkType = this.getNetworkType();
     const psbtNetwork = toPsbtNetwork(networkType);
 
-    const psbt = await createSendBTC({
-      utxos: utxos.map(v => {
-        return {
-          txId: v.txId,
-          outputIndex: v.outputIndex,
-          satoshis: v.satoshis,
-          scriptPk: v.scriptPk,
-          addressType: v.addressType,
-          address: account.address,
-          ords: v.inscriptions,
-        };
-      }),
-      toAddress: to,
-      toAmount: amount,
-      wallet: this,
-      network: psbtNetwork,
-      changeAddress: account.address,
-      force: autoAdjust,
-      pubkey: account.pair.publicKey.toString('hex'),
-      feeRate,
+    const dialog = await showConfirmationDialogV2(this.snap, {
+      prompt: 'Confirm sending BTC',
+      description: 'Confirm to sign transaction and send',
+      texts: [`**to**:`, `copy:${to}`, `**amount**:`, `${amount}`, `**fee rate**:`, `${feeRate}`],
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
-    return psbt.toHex();
+    if (dialog) {
+      const psbt = await createSendBTC({
+        utxos: utxos.map(v => {
+          return {
+            txId: v.txId,
+            outputIndex: v.outputIndex,
+            satoshis: v.satoshis,
+            scriptPk: v.scriptPk,
+            addressType: v.addressType,
+            address: account.address,
+            ords: v.inscriptions,
+          };
+        }),
+        toAddress: to,
+        toAmount: amount,
+        wallet: this,
+        network: psbtNetwork,
+        changeAddress: account.address,
+        force: autoAdjust,
+        pubkey: account.pair.publicKey.toString('hex'),
+        feeRate,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
+      return psbt.toHex();
+    } else {
+      throwError({
+        message: 'User Reject',
+        stack: 'Ord_sendBTC',
+        code: 401,
+      });
+    }
   };
 
   pushTx = async (rawtx: string) => {

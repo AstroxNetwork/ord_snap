@@ -85,7 +85,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       const kr = await OrdKeyring.fromStorage(snap);
       await kr.saveWallets();
       await http.saveHttpService();
-      const wallet = new OrdWallet(kr, http);
+      const wallet = new OrdWallet(snap, kr, http);
       return JSON.stringify(wallet.getAccounts());
     }
     case 'Ord_getAddress': {

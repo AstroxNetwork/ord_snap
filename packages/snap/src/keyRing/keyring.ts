@@ -199,7 +199,7 @@ export class OrdKeyring {
 
   async addAccounts(n = 1): Promise<Accounts[]> {
     const newWallets: SignerInterface[] = [];
-    const exist = await this.getAccounts();
+    const exist = this.getAccounts();
     if (exist.length < n) {
       for (let i = 0; i < n; i++) {
         newWallets.push(await getSignerFromWallet(this.snap, { index: i }));
@@ -254,17 +254,18 @@ export class OrdKeyring {
   }
 
   signTransaction(psbt: bitcoin.Psbt, inputs: { index: number; publicKey: string; sighashTypes?: number[] }[], opts?: TweakOpts): bitcoin.Psbt {
+    let rt: bitcoin.Psbt = psbt;
     inputs.forEach(input => {
       const keyPair = this._getPrivateKeyFor(input.publicKey).pair;
-      if (isTaprootInput(psbt.data.inputs[input.index])) {
+      if (isTaprootInput(rt.data.inputs[input.index])) {
         const signer = tweakSigner(keyPair, opts);
-        psbt.signInput(input.index, signer, input.sighashTypes);
+        rt = rt.signInput(input.index, signer, input.sighashTypes);
       } else {
         const signer = keyPair;
-        psbt.signInput(input.index, signer, input.sighashTypes);
+        rt = rt.signInput(input.index, signer, input.sighashTypes);
       }
     });
-    return psbt;
+    return rt;
   }
 
   signMessage(publicKey: string, text: string): string {
@@ -277,16 +278,16 @@ export class OrdKeyring {
     return ecc.verify(sha256(Buffer.from(text)), new Uint8Array(fromHexString(publicKey)), new Uint8Array(fromHexString(sig)));
   }
 
-  private _getPrivateKeyFor(publicKey: string): AddressPair {
+  private _getPrivateKeyFor(publicKey: string, addressType: AddressType = AddressType.P2TR): AddressPair {
     if (!publicKey) {
       throw new Error('Must specify publicKey.');
     }
-    const wallet = this._getWalletForAccount(publicKey);
+    const wallet = this._getWalletForAccount(publicKey).addressPairs.find(e => e.addressType === addressType);
     return wallet;
   }
 
-  exportAccount(publicKey: string): string {
-    const wallet = this._getWalletForAccount(publicKey);
+  exportAccount(publicKey: string, addressType: AddressType = AddressType.P2TR): string {
+    const wallet = this._getWalletForAccount(publicKey).addressPairs.find(e => e.addressType === addressType);
     return wallet.pair.privateKey.toString('hex');
   }
 
@@ -300,38 +301,48 @@ export class OrdKeyring {
     await this.saveWallets();
   }
 
-  private _getWalletForAccount(publicKey: string): AddressPair {
+  private _getWalletForAccount(publicKey: string): SignerInterface {
     const pairs = this.wallets.flatMap(e => e.addressPairs);
     let wallet = pairs.find(wallet => wallet.pair.publicKey.toString('hex') === publicKey);
+
     if (!wallet) {
       throw new Error('Simple Keyring - Unable to find matching publicKey.');
     }
-    return wallet;
+    return this._getWalletFromIndex(wallet.index);
   }
 
-  public async getAddress(index?: number, addressType?: AddressType, networkType?: NetworkType): Promise<string> {
+  public async getAddress(
+    index: number = 0,
+    addressType: AddressType = AddressType.P2TR,
+    networkType: NetworkType = NetworkType.MAINNET,
+  ): Promise<string> {
     const accounts = this.getAccounts();
-    const found = accounts
-      .find(e => (index !== undefined ? e.index === index : e.index === 0))
-      .addresses.find(f => f.addressType === getAddressLabelName(addressType ?? AddressType.P2TR));
-    return publicKeyToAddress(found.publicKey, addressType ?? AddressType.P2TR, networkType ?? NetworkType.MAINNET);
+    const found = accounts.find(e => e.index === index).addresses.find(f => f.addressType === getAddressLabelName(addressType));
+    return publicKeyToAddress(found.publicKey, addressType, networkType);
   }
 
-  public getAccount(publicKey?: string): AddressPair {
+  public getAccount(publicKey?: string): SignerInterface {
     return this._getWalletForAccount(publicKey);
   }
 
-  public getCurrentAccount(index: number = 0) {
+  public getCurrentAccount(index: number = 0, addressType: AddressType = AddressType.P2TR): AddressPair {
     const accounts = this.getAccounts();
     const adds = accounts.flatMap(a => a.addresses);
     const found = adds.find(d => d.index === index ?? 0);
-    return this._getWalletForAccount(found.publicKey);
+    const signer = this._getWalletForAccount(found.publicKey);
+    return signer.addressPairs.find(e => e.addressType === addressType);
   }
 
   private _getWalletFromAddress(address: string): AddressPair {
     const accounts = this.getAccounts();
     const adds = accounts.flatMap(a => a.addresses);
     const found = adds.find(d => d.address === address);
-    return this._getWalletForAccount(found.publicKey);
+    const signer = this._getWalletForAccount(found.publicKey);
+    return signer.addressPairs.find(e => e.address === address);
+  }
+
+  private _getWalletFromIndex(index: number): SignerInterface {
+    const found = this.wallets.find(d => d.index === index);
+    return found;
   }
 }

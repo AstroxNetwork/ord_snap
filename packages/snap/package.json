@@ -53,6 +53,7 @@
     "@metamask/snaps-browserify-plugin": "^0.31.0",
     "@metamask/snaps-cli": "^0.18.1",
     "@metamask/snaps-types": "^0.26.2",
+    "@metamask/snaps-ui": "^0.31.0",
     "@metamask/snaps-webpack-plugin": "^0.31.0",
     "@noble/secp256k1": "^1.7.0",
     "@types/deepmerge": "^2.2.0",
