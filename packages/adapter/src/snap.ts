@@ -14,6 +14,7 @@ import {
   getAddressUtxo,
   getAddressBalance,
   sendBTC,
+  sendInscription,
 } from './methods';
 
 export interface SnapIdentity {
@@ -54,6 +55,7 @@ export class MetamaskOrdSnap {
       getAddressUtxo: getAddressUtxo.bind(this),
       getAddressBalance: getAddressBalance.bind(this),
       sendBTC: sendBTC.bind(this),
+      sendInscription: sendInscription.bind(this),
     };
   };
 }

@@ -147,5 +147,6 @@ export interface Account {
 export interface TXSendBTC {
   psbtHex: string;
   rawTx: string;
-  txId: string;
+  txType: TxType;
+  txId?: string;
 }

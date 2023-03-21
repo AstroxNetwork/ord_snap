@@ -9,6 +9,7 @@ import {
   InitWallet,
   GetAddressUtxo,
   SendBTC,
+  SendInscription,
 } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { OnRpcRequestHandler } from '@metamask/snaps-types';
@@ -112,6 +113,13 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
 
       const tx = await wallet.sendBTC({
         ...(request as unknown as SendBTC).params,
+      });
+      return tx;
+    }
+    case 'Ord_sendInscription': {
+      const wallet = await OrdWallet.fromStorage(snap);
+      const tx = await wallet.sendInscription({
+        ...(request as unknown as SendInscription).params,
       });
       return tx;
     }

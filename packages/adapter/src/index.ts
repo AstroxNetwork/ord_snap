@@ -9,6 +9,7 @@ export {
   getAddress,
   addNextAccount,
   sendBTC,
+  sendInscription,
 } from './methods';
 export { MetamaskOrdSnap, enableOrdSnap, SnapIdentity } from './snap';
 // import './types';

@@ -79,3 +79,14 @@ export async function sendBTC(
 ): Promise<TXSendBTC> {
   return await sendSnapMethod({ method: 'Ord_sendBTC', params: { to, amount, utxos, autoAdjust, feeRate } }, this.snapId);
 }
+
+export async function sendInscription(
+  this: MetamaskOrdSnap,
+  to: string,
+  inscriptionId: string,
+  utxos: UTXO[],
+  feeRate: number,
+  outputValue: number,
+): Promise<TXSendBTC> {
+  return await sendSnapMethod({ method: 'Ord_sendInscription', params: { to, inscriptionId, utxos, outputValue, feeRate } }, this.snapId);
+}

@@ -5,9 +5,9 @@ import { HttpService } from '../api/service';
 import { Accounts, OrdKeyring, toXOnly } from '../keyRing/keyring';
 
 import { AddressType, BitcoinBalance, Inscription, NetworkType, ToSignInput, TxHistoryItem, UTXO, TXSendBTC } from '@astrox/ord-snap-types';
-import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES } from '@astrox/ord-snap-types';
+import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES, TxType } from '@astrox/ord-snap-types';
 import { toPsbtNetwork, validator } from '../snap/util';
-import { createSendBTC } from '../ord/ord';
+import { createSendBTC, createSendOrd } from '../ord/ord';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { HttpAgentOptions } from '../api/http';
 import { OrdTransaction } from '../ord/OrdTransaction';
@@ -196,11 +196,78 @@ export class OrdWallet {
         txId,
         psbtHex: psbt.toHex(),
         rawTx,
+        txType: TxType.SEND_BITCOIN,
       };
     } else {
       throwError({
         message: 'User Reject',
         stack: 'Ord_sendBTC',
+        code: 401,
+      });
+    }
+  };
+
+  sendInscription = async ({
+    to,
+    inscriptionId,
+    utxos,
+    feeRate,
+    outputValue,
+  }: {
+    to: string;
+    inscriptionId: string;
+    utxos: UTXO[];
+    feeRate: number;
+    outputValue: number;
+  }): Promise<TXSendBTC> => {
+    const account = this.keyRing.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+
+    const networkType = this.getNetworkType();
+    const psbtNetwork = toPsbtNetwork(networkType);
+
+    const dialog = await showConfirmationDialogV2(this.snap, {
+      prompt: 'Confirm sending BTC',
+      description: 'Confirm to sign transaction and send',
+      texts: [`**to**:`, `copy:${to}`, `**inscriptionId**:`, `${inscriptionId}`, `**fee rate**:`, `${feeRate}`],
+    });
+    if (dialog) {
+      const psbt = await createSendOrd({
+        utxos: utxos.map(v => {
+          return {
+            txId: v.txId,
+            outputIndex: v.outputIndex,
+            satoshis: v.satoshis,
+            scriptPk: v.scriptPk,
+            addressType: v.addressType,
+            address: account.address,
+            ords: v.inscriptions,
+          };
+        }),
+        toAddress: to,
+        toOrdId: inscriptionId,
+        wallet: this,
+        network: psbtNetwork,
+        changeAddress: account.address,
+        pubkey: account.pair.publicKey.toString('hex'),
+        feeRate,
+        outputValue,
+      });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      psbt.__CACHE.__UNSAFE_SIGN_NONSEGWIT = false;
+      const rawTx = psbt.extractTransaction().toHex();
+      const txId = await this.pushTx(rawTx);
+      return {
+        txId,
+        psbtHex: psbt.toHex(),
+        rawTx,
+        txType: TxType.SEND_INSCRIPTION,
+      };
+    } else {
+      throwError({
+        message: 'User Reject',
+        stack: 'Ord_sendInscription',
         code: 401,
       });
     }

@@ -50,4 +50,5 @@ export interface OrdSnapApi {
   getAddressUtxo(address: string): Promise<string>;
   getAddressBalance(address: string): Promise<string>;
   sendBTC(to: string, amount: number, utxos: UTXO[], autoAdjust: boolean, feeRate: number): Promise<TXSendBTC>;
+  sendInscription(to: string, inscriptionId: string, utxos: UTXO[], feeRate: number, outputValue: number): Promise<TXSendBTC>;
 }

@@ -3,7 +3,7 @@
   "description": "The ord snap.",
   "proposedName": "OrdSnap",
   "source": {
-    "shasum": "kN1C9GZ8ysf1YUVuLvlcMyiSrRdazEECfPr5IrLUx5c=",
+    "shasum": "JhadNttldnBOG7N/1YkT4XJyjZrQnpNTNA0byJ2Zxhc=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

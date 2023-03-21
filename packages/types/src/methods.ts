@@ -123,6 +123,17 @@ export interface SendBTC {
   };
 }
 
+export interface SendInscription {
+  method: 'Ord_sendInscription';
+  params: {
+    to: string;
+    inscriptionId: string;
+    utxos: UTXO[];
+    feeRate: number;
+    outputValue: number;
+  };
+}
+
 export type MetamaskOrdRpcRequest =
   | ConfigureRequest
   | SignRequest
@@ -136,6 +147,7 @@ export type MetamaskOrdRpcRequest =
   | AddNextAccount
   | GetAddressUtxo
   | GetAddressBalance
-  | SendBTC;
+  | SendBTC
+  | SendInscription;
 
 type Method = MetamaskOrdRpcRequest['method'];

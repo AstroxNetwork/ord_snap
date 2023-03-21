@@ -128,6 +128,7 @@ export async function createSendOrd({
   changeAddress,
   pubkey,
   feeRate,
+  outputValue,
 }: {
   utxos: UnspentOutput[];
   toAddress: string;
@@ -137,6 +138,7 @@ export async function createSendOrd({
   changeAddress: string;
   pubkey: string;
   feeRate?: number;
+  outputValue: number;
 }) {
   const tx = new OrdTransaction(wallet, network, pubkey, feeRate);
   tx.setChangeAddress(changeAddress);
@@ -183,9 +185,10 @@ export async function createSendOrd({
   }
 
   // format NFT
-  if (tx.outputs.length == 1 && tx.outputs[0].value < UTXO_DUST) {
-    tx.outputs[0].value = UTXO_DUST;
-  }
+  // if (tx.outputs.length == 1 && tx.outputs[0].value < UTXO_DUST) {
+  //   tx.outputs[0].value = UTXO_DUST;
+  // }
+  tx.outputs[0].value = outputValue;
 
   nonOrdUtxos.forEach(v => {
     tx.addInput(v.utxo);
