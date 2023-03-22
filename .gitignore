@@ -6,3 +6,4 @@ node_modules/
 .DS_store
 .vscode/
 **/*.tsbuildinfo
+package-lock.json
