@@ -22,9 +22,6 @@
     "snap_dialog": {},
     "snap_getBip44Entropy": [
       {
-        "coinType": 1
-      },
-      {
         "coinType": 0
       },
       {
