@@ -10,6 +10,11 @@ export {
   addNextAccount,
   sendBTC,
   sendInscription,
+  getNProfile,
+  getNPub,
+  addRelays,
+  signEvent,
+  delegate,
 } from './methods';
 export { MetamaskOrdSnap, enableOrdSnap, SnapIdentity } from './snap';
 // import './types';

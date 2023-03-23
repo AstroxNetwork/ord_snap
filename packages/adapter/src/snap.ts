@@ -15,6 +15,11 @@ import {
   getAddressBalance,
   sendBTC,
   sendInscription,
+  getNProfile,
+  getNPub,
+  signEvent,
+  delegate,
+  addRelays,
 } from './methods';
 
 export interface SnapIdentity {
@@ -27,6 +32,8 @@ export class MetamaskOrdSnap {
   // snap parameters
   protected readonly snapOrigin: string;
   protected readonly snapId: string;
+  protected readonly nostr = {};
+  protected readonly ord = {};
 
   public async createSnapIdentity(): Promise<SnapIdentity> {
     const api = await this.getOrdSnapApi();
@@ -43,19 +50,28 @@ export class MetamaskOrdSnap {
   public getOrdSnapApi = async (): Promise<OrdSnapApi> => {
     return {
       configure: configure.bind(this),
-      sign: sign.bind(this),
-      signRawMessage: signRawMessage.bind(this),
-      encryptMessage: encryptMessage.bind(this),
-      decryptMessage: decryptMessage.bind(this),
       getPrincipal: getPrincipal.bind(this),
       getRawPublicKey: getRawPublicKey.bind(this),
-      getAddress: getAddress.bind(this),
-      addNextAccount: addNextAccount.bind(this),
-      initWallet: initWallet.bind(this),
-      getAddressUtxo: getAddressUtxo.bind(this),
-      getAddressBalance: getAddressBalance.bind(this),
-      sendBTC: sendBTC.bind(this),
-      sendInscription: sendInscription.bind(this),
+      nostr: {
+        sign: sign.bind(this),
+        signRawMessage: signRawMessage.bind(this),
+        encryptMessage: encryptMessage.bind(this),
+        decryptMessage: decryptMessage.bind(this),
+        getNPub: getNPub.bind(this),
+        getNProfile: getNProfile.bind(this),
+        signEvent: signEvent.bind(this),
+        delegate: delegate.bind(this),
+        addRelays: addRelays.bind(this),
+      },
+      ord: {
+        initWallet: initWallet.bind(this),
+        addNextAccount: addNextAccount.bind(this),
+        getAddress: getAddress.bind(this),
+        getAddressUtxo: getAddressUtxo.bind(this),
+        getAddressBalance: getAddressBalance.bind(this),
+        sendBTC: sendBTC.bind(this),
+        sendInscription: sendInscription.bind(this),
+      },
     };
   };
 }
@@ -113,6 +129,7 @@ export async function enableOrdSnap(
   const api = await snap.getOrdSnapApi();
   // set initial configuration
   await api.configure(config);
+  console.log({ api });
   // return snap object
   return snap;
 }

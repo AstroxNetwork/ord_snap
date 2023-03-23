@@ -7,11 +7,14 @@ import {
   UTXO,
   TXSendBTC,
   ErrorPayload,
+  Delegation,
 } from "@astrox/ord-snap-types"
 // import { canisterId, createActor } from "./services"
 
 export function Intro() {
   const [publicKey, setPublicKey] = useState<string | undefined>(undefined)
+  const [nPub, setNPub] = useState<string | undefined>(undefined)
+  const [nProfile, setNProfile] = useState<string | undefined>(undefined)
 
   const [installed, setInstalled] = useState<boolean>(false)
   const [message, setMessage] = useState<string | undefined>(undefined)
@@ -38,6 +41,11 @@ export function Intro() {
 
   const [signedMessage, setSignedMessage] = useState<
     SignMessageResponse | undefined
+  >(undefined)
+
+  const [delegated, setDelegated] = useState<string | undefined>(undefined)
+  const [delegatedObject, setDelegatedObject] = useState<
+    Delegation | undefined
   >(undefined)
 
   const [snapIdentity, setSnapIdentity] = useState<SnapIdentity | undefined>(
@@ -67,15 +75,22 @@ export function Intro() {
 
   const getPublicKey = async () => {
     setPublicKey(snapIdentity?.publicKey)
+    setNPub(await snapIdentity?.api.nostr.getNPub())
+    setNProfile(await snapIdentity?.api.nostr.getNProfile())
+  }
+
+  const delegate = async () => {
+    const dele = await snapIdentity?.api.nostr.delegate(delegated!)
+    setDelegatedObject(dele)
   }
 
   const signMessage = async () => {
-    const signed = await snapIdentity?.api.sign(message!)
+    const signed = await snapIdentity?.api.nostr.sign(message!)
     setSignedMessage(signed!)
   }
 
   const encryptMessage = async () => {
-    const encrypted = await snapIdentity?.api.encryptMessage(
+    const encrypted = await snapIdentity?.api.nostr.encryptMessage(
       theirPublicKey!,
       toEncryptMessage!,
     )
@@ -83,7 +98,7 @@ export function Intro() {
   }
 
   const decryptMessage = async () => {
-    const encrypted = await snapIdentity?.api.decryptMessage(
+    const encrypted = await snapIdentity?.api.nostr.decryptMessage(
       theirDecryptPublicKey!,
       toDecryptMessage!,
     )
@@ -92,19 +107,19 @@ export function Intro() {
 
   const getAddress = async () => {
     console.log(snapIdentity?.api)
-    const ad = await snapIdentity?.api.getAddress()
+    const ad = await snapIdentity?.api.ord.getAddress()
     setAccs(ad)
   }
   const addNextAccount = async () => {
     console.log(snapIdentity?.api)
-    const ad = await snapIdentity?.api.addNextAccount()
+    const ad = await snapIdentity?.api.ord.addNextAccount()
     console.log(ad)
   }
 
   const sendBTC = async () => {
-    const account = await snapIdentity?.api.getAddress()
+    const account = await snapIdentity?.api.ord.getAddress()
 
-    const sendUtxos = await snapIdentity?.api.getAddressUtxo(account!)
+    const sendUtxos = await snapIdentity?.api.ord.getAddressUtxo(account!)
     console.log({
       sendTo,
       sendAmount,
@@ -113,7 +128,7 @@ export function Intro() {
       sendFeeRate,
     })
     try {
-      const tx = await snapIdentity?.api.sendBTC(
+      const tx = await snapIdentity?.api.ord.sendBTC(
         sendTo!,
         sendAmount!,
         JSON.parse(sendUtxos!) as UTXO[],
@@ -131,7 +146,7 @@ export function Intro() {
 
   const initWallet = async () => {
     console.log(snapIdentity?.api)
-    await snapIdentity?.api.initWallet(host, {
+    await snapIdentity?.api.ord.initWallet(host, {
       "X-Client": "UniSat Wallet",
       "X-Version": "1.1.12",
       "Content-Type": "application/json;charset=utf-8",
@@ -140,13 +155,15 @@ export function Intro() {
 
   const getAddressUtxos = async () => {
     console.log(snapIdentity?.api)
-    const utxos = await snapIdentity?.api.getAddressUtxo(utxoAddress ?? accs!)
+    const utxos = await snapIdentity?.api.ord.getAddressUtxo(
+      utxoAddress ?? accs!,
+    )
     console.log(utxos)
   }
 
   const getAddressBalance = async () => {
     console.log(snapIdentity?.api)
-    const balance = await snapIdentity?.api.getAddressBalance(
+    const balance = await snapIdentity?.api.ord.getAddressBalance(
       utxoAddress ?? accs!,
     )
     console.log(balance)
@@ -306,10 +323,20 @@ export function Intro() {
           }}
         >
           {installed ? (
-            <div style={{ width: "100%", minWidth: "100%" }}>
-              <code>PublicKey is:</code>
-              <p style={{ fontSize: 16 }}>{publicKey ?? "...loading"}</p>
-            </div>
+            <>
+              <div style={{ width: "100%", minWidth: "100%" }}>
+                <code>PublicKey is:</code>
+                <p style={{ fontSize: 16 }}>{publicKey ?? "...loading"}</p>
+              </div>
+              <div style={{ width: "100%", minWidth: "100%" }}>
+                <code>NPub is:</code>
+                <p style={{ fontSize: 16 }}>{nPub ?? "...loading"}</p>
+              </div>
+              <div style={{ width: "100%", minWidth: "100%" }}>
+                <code>NProfile is:</code>
+                <p style={{ fontSize: 16 }}>{nProfile ?? "...loading"}</p>
+              </div>
+            </>
           ) : (
             <button className="demo-button" onClick={installSnap}>
               Install Snap
@@ -318,7 +345,39 @@ export function Intro() {
 
           {installed ? (
             <>
-              <h2>Encrypt Message</h2>
+              <h2>Delegate To</h2>
+              <label style={{ marginBottom: 16 }}>
+                Input nPub or nProfile To Delegate
+              </label>
+              <input
+                aria-label="To delegate a publickey"
+                style={{ padding: "1em" }}
+                onChange={(e) => {
+                  setDelegated(e.target.value)
+                }}
+              />
+
+              {delegatedObject !== undefined ? (
+                <div
+                  style={{
+                    wordBreak: "break-all",
+                    maxWidth: "100%",
+                    margin: "1em 0",
+                  }}
+                >
+                  <code>delegate object is : </code>
+                  <p>{JSON.stringify(delegatedObject)}</p>
+                </div>
+              ) : null}
+              <button className="demo-button" onClick={delegate}>
+                Delegate a pubkey
+              </button>
+            </>
+          ) : null}
+
+          {installed ? (
+            <>
+              <h2>Sign Message</h2>
               <label style={{ marginBottom: 16 }}>Input Messsage To Sign</label>
               <input
                 aria-label="To Sign a message"

@@ -5,6 +5,7 @@ import { SnapsGlobalObject } from '@metamask/snaps-types';
 
 export async function getPrincipal(wallet: SnapsGlobalObject): Promise<string> {
   const nostr = await getNostr(wallet);
+
   const principal = nostr.getPrincipal().toText();
   return principal;
 }

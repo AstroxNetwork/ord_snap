@@ -22,11 +22,11 @@ export class NostrIdentity extends SchnorrIdentity {
   static async fromSchnorr(snap: SnapsGlobalObject, schnorr: SchnorrIdentity): Promise<NostrIdentity> {
     const id = new NostrIdentity(snap, schnorr);
     const relays = await id.loadRelays();
-    id.addRelays(relays);
+    id.addRelays(relays ?? []);
     return id;
   }
 
-  public relays: string[];
+  public relays: string[] = [];
 
   private get pk(): string {
     return toHexString(this.getPublicKey().toRaw());
@@ -60,8 +60,10 @@ export class NostrIdentity extends SchnorrIdentity {
   }
 
   private decodeString(someString: string): string {
-    if (someString.startsWith('nprofile') || someString.startsWith('npub')) {
+    if (someString.startsWith('nprofile')) {
       return (nip19.decode(someString).data as ProfilePointer).pubkey;
+    } else if (someString.startsWith('npub1')) {
+      return nip19.decode(someString).data as string;
     } else {
       return someString;
     }

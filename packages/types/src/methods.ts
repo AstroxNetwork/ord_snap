@@ -1,4 +1,4 @@
-import { UTXO } from './constant/types';
+import { UnsignedEvent, UTXO } from './constant/types';
 import { SnapConfig } from './snap';
 
 export abstract class WalletMethod {
@@ -34,27 +34,35 @@ export type MetamaskState = {
 };
 
 export interface ConfigureRequest {
-  method: 'Schnorr_configure';
+  method: 'Global_configure';
   params: {
     configuration: SnapConfig;
   };
 }
 
+export interface GetRawPublicKey {
+  method: 'Global_getRawPublicKey';
+}
+
+export interface GetPrincipal {
+  method: 'Global_getPrincipal';
+}
+
 export interface SignRequest {
-  method: 'Schnorr_sign';
+  method: 'Nostr_sign';
   params: {
     message: string;
   };
 }
 export interface SignRawMessageRequest {
-  method: 'Schnorr_signRawMessage';
+  method: 'Nostr_signRawMessage';
   params: {
     message: string;
   };
 }
 
 export interface EncryptMessageRequest {
-  method: 'Schnorr_encryptMessage';
+  method: 'Nostr_encryptMessage';
   params: {
     theirPublicKey: string;
     message: string;
@@ -62,19 +70,40 @@ export interface EncryptMessageRequest {
 }
 
 export interface DecryptMessageRequest {
-  method: 'Schnorr_decryptMessage';
+  method: 'Nostr_decryptMessage';
   params: {
     theirPublicKey: string;
     cipherText: string;
   };
 }
 
-export interface GetRawPublicKey {
-  method: 'Schnorr_getRawPublicKey';
+export interface GetNPub {
+  method: 'Nostr_getNPub';
 }
 
-export interface GetPrincipal {
-  method: 'Schnorr_getPrincipal';
+export interface GetNProfile {
+  method: 'Nostr_getNProfile';
+}
+
+export interface SignEvent {
+  method: 'Nostr_signEvent';
+  params: {
+    unsignedEvent: UnsignedEvent;
+  };
+}
+
+export interface AddRelays {
+  method: 'Nostr_addRelays';
+  params: {
+    relays: string[];
+  };
+}
+
+export interface Delegate {
+  method: 'Nostr_delegate';
+  params: {
+    other: string;
+  };
 }
 
 export interface GetAddress {
@@ -142,9 +171,15 @@ export type MetamaskOrdRpcRequest =
   | GetRawPublicKey
   | EncryptMessageRequest
   | DecryptMessageRequest
-  | GetAddress
+  | GetNPub
+  | GetNProfile
+  | GetNPub
+  | SignEvent
+  | AddRelays
+  | Delegate
   | InitWallet
   | AddNextAccount
+  | GetAddress
   | GetAddressUtxo
   | GetAddressBalance
   | SendBTC

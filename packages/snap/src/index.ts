@@ -10,6 +10,9 @@ import {
   GetAddressUtxo,
   SendBTC,
   SendInscription,
+  SignEvent,
+  Delegate,
+  AddRelays,
 } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { OnRpcRequestHandler } from '@metamask/snaps-types';
@@ -24,6 +27,7 @@ import { OrdKeyring } from './keyRing/keyring';
 import { sign, signRawMessasge } from './schnorr/sign';
 import { HttpService } from './api/service';
 import { OrdWallet } from './wallet';
+import { addRelays, delegate, getNProfile, getNPub, signEvent } from './nostr/api';
 
 declare let snap: SnapsGlobalObject;
 
@@ -49,7 +53,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
     });
   }
   switch (request.method) {
-    case 'Schnorr_configure': {
+    case 'Global_configure': {
       const resp = await configure(
         snap,
         (request as unknown as ConfigureRequest).params.configuration.network,
@@ -57,26 +61,38 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       );
       return resp.snapConfig;
     }
-    case 'Schnorr_getPrincipal':
+    case 'Global_getPrincipal':
       return await getPrincipal(snap);
-    case 'Schnorr_getRawPublicKey':
+    case 'Global_getRawPublicKey':
       return await getRawPublicKey(snap);
-    case 'Schnorr_sign':
+    case 'Nostr_sign':
       return await sign(snap, (request as unknown as SignRequest).params.message);
-    case 'Schnorr_signRawMessage':
+    case 'Nostr_signRawMessage':
       return await signRawMessasge(snap, (request as unknown as SignRawMessageRequest).params.message);
-    case 'Schnorr_encryptMessage':
+    case 'Nostr_encryptMessage':
       return await encryptMessage(
         snap,
         (request as unknown as EncryptMessageRequest).params.theirPublicKey,
         (request as unknown as EncryptMessageRequest).params.message,
       );
-    case 'Schnorr_decryptMessage':
+    case 'Nostr_decryptMessage':
       return await decryptMessage(
         snap,
         (request as unknown as DecryptMessageRequest).params.theirPublicKey,
         (request as unknown as DecryptMessageRequest).params.cipherText,
       );
+    case 'Nostr_getNPub':
+      return await getNPub(snap);
+    case 'Nostr_getNProfile':
+      return await getNProfile(snap);
+    case 'Nostr_signEvent':
+      return await signEvent(snap, (request as unknown as SignEvent).params.unsignedEvent);
+    case 'Nostr_delegate':
+      const dd = await delegate(snap, (request as unknown as Delegate).params.other);
+      // throw new Error(`dd: ${JSON.stringify(dd)}`);
+      return dd;
+    case 'Nostr_addRelays':
+      return await addRelays(snap, (request as unknown as AddRelays).params.relays);
     case 'Ord_initWallet': {
       const http = new HttpService(snap, {
         host: (request as unknown as InitWallet).params.host,
@@ -124,6 +140,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       return tx;
     }
     default:
-      throw new Error('Unsupported RPC method');
+      throw new Error(`Unsupported RPC method: ${request.method}`);
   }
 };

@@ -157,3 +157,40 @@ export interface ErrorPayload {
   stack: string;
   code: number;
 }
+
+export declare enum Kind {
+  Metadata = 0,
+  Text = 1,
+  RecommendRelay = 2,
+  Contacts = 3,
+  EncryptedDirectMessage = 4,
+  EventDeletion = 5,
+  Reaction = 7,
+  ChannelCreation = 40,
+  ChannelMetadata = 41,
+  ChannelMessage = 42,
+  ChannelHideMessage = 43,
+  ChannelMuteUser = 44,
+  Report = 1984,
+  ZapRequest = 9734,
+  Zap = 9735,
+  RelayList = 10002,
+  ClientAuth = 22242,
+  Article = 30023,
+}
+export type EventTemplate = {
+  kind: Kind;
+  tags: string[][];
+  content: string;
+  created_at: number;
+};
+export type UnsignedEvent = EventTemplate & {
+  pubkey: string;
+};
+
+export type Delegation = {
+  from: string;
+  to: string;
+  cond: string;
+  sig: string;
+};

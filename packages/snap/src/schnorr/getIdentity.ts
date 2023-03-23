@@ -6,9 +6,7 @@ import { NostrIdentity } from '../nostr/nostr_identity';
 
 export async function getIdentity(wallet: SnapsGlobalObject, index?: number): Promise<string> {
   const privateKey = await getPrivateKeyFromWallet(wallet, undefined, index);
-
   const sk = SchnorrIdentity.fromSecretKey(privateKey.buffer);
-
   return JSON.stringify(sk.toJSON());
   // Now, you can ask the user to e.g. sign transactions!
 }
