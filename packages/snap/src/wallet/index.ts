@@ -37,30 +37,78 @@ export class OrdWallet {
   }
 
   getAddressBalance = async (address: string): Promise<BitcoinBalance> => {
-    const data = await this.httpService.getAddressBalance(address);
-    return data;
+    try {
+      const data = await this.httpService.getAddressBalance(address);
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getAddressBalance',
+        code: 400,
+      });
+    }
   };
 
   getMultiAddressBalance = async (addresses: string): Promise<BitcoinBalance[]> => {
-    return this.httpService.getMultiAddressBalance(addresses);
+    try {
+      return this.httpService.getMultiAddressBalance(addresses);
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getMultiAddressBalance',
+        code: 400,
+      });
+    }
   };
 
   getAddressInscriptions = async (address: string): Promise<Inscription[]> => {
-    const data = await this.httpService.getAddressInscriptions(address);
-    return data;
+    try {
+      const data = await this.httpService.getAddressInscriptions(address);
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getAddressInscriptions',
+        code: 400,
+      });
+    }
   };
 
   getAccountsCount = (): number => {
-    const accounts = this.keyRing.getAccounts();
-    return accounts.filter(x => x).length;
+    try {
+      const accounts = this.keyRing.getAccounts();
+      return accounts.filter(x => x).length;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getAccountsCount',
+        code: 400,
+      });
+    }
   };
 
   getAccounts = (): Accounts[] => {
-    return this.keyRing.getAccounts();
+    try {
+      return this.keyRing.getAccounts();
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getAccounts',
+        code: 400,
+      });
+    }
   };
 
   signTransaction = async (type: string, from: string, psbt: bitcoin.Psbt, inputs: ToSignInput[]): Promise<bitcoin.Psbt> => {
-    return this.keyRing.signTransaction(psbt, inputs);
+    try {
+      return this.keyRing.signTransaction(psbt, inputs);
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_signTransaction',
+        code: 400,
+      });
+    }
   };
 
   signPsbt = (psbt: bitcoin.Psbt): bitcoin.Psbt => {
@@ -110,19 +158,43 @@ export class OrdWallet {
   };
 
   signMessage = (text: string): string => {
-    const account = this.keyRing.getCurrentAccount();
-    return this.keyRing.signMessage(account.pair.publicKey.toString('hex'), text);
+    try {
+      const account = this.keyRing.getCurrentAccount();
+      return this.keyRing.signMessage(account.pair.publicKey.toString('hex'), text);
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_signMessage',
+        code: 400,
+      });
+    }
   };
 
   getTransactionHistory = async (address: string): Promise<TxHistoryItem[]> => {
-    const result = await this.httpService.getAddressRecentHistory(address);
-    return result;
+    try {
+      const result = await this.httpService.getAddressRecentHistory(address);
+      return result;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getTransactionHistory',
+        code: 400,
+      });
+    }
   };
 
   listChainAssets = async (pubkeyAddress: string): Promise<AccountAsset[]> => {
-    const balance = await this.httpService.getAddressBalance(pubkeyAddress);
-    const assets: AccountAsset[] = [{ name: COIN_NAME, symbol: COIN_SYMBOL, amount: balance.amount, value: balance.usd_value }];
-    return assets;
+    try {
+      const balance = await this.httpService.getAddressBalance(pubkeyAddress);
+      const assets: AccountAsset[] = [{ name: COIN_NAME, symbol: COIN_SYMBOL, amount: balance.amount, value: balance.usd_value }];
+      return assets;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_listChainAssets',
+        code: 400,
+      });
+    }
   };
 
   reportErrors = (error: string) => {
@@ -130,13 +202,29 @@ export class OrdWallet {
   };
 
   getNetworkType = (): NetworkType => {
-    const networkType = this.keyRing.getNetworkType();
-    return networkType;
+    try {
+      const networkType = this.keyRing.getNetworkType();
+      return networkType;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getNetworkType',
+        code: 400,
+      });
+    }
   };
 
   getNetworkName = () => {
-    const networkType = this.keyRing.getNetworkType();
-    return NETWORK_TYPES[networkType].name;
+    try {
+      const networkType = this.keyRing.getNetworkType();
+      return NETWORK_TYPES[networkType].name;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getNetworkName',
+        code: 400,
+      });
+    }
   };
 
   sendBTC = async ({
@@ -274,32 +362,80 @@ export class OrdWallet {
   };
 
   pushTx = async (rawtx: string): Promise<string> => {
-    const txid = await this.httpService.pushTx(rawtx);
-    return JSON.parse(txid).result as string;
+    try {
+      const txid = await this.httpService.pushTx(rawtx);
+      return JSON.parse(txid).result as string;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_pushTx',
+        code: 400,
+      });
+    }
   };
 
   queryDomainInfo = async (domain: string) => {
-    const data = await this.httpService.getDomainInfo(domain);
-    return data;
+    try {
+      const data = await this.httpService.getDomainInfo(domain);
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_queryDomainInfo',
+        code: 400,
+      });
+    }
   };
 
   getInscriptionSummary = async () => {
-    const data = await this.httpService.getInscriptionSummary();
-    return data;
+    try {
+      const data = await this.httpService.getInscriptionSummary();
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getInscriptionSummary',
+        code: 400,
+      });
+    }
   };
 
   getAppSummary = async () => {
-    const data = await this.httpService.getAppSummary();
-    return data;
+    try {
+      const data = await this.httpService.getAppSummary();
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getAppSummary',
+        code: 400,
+      });
+    }
   };
 
   getAddressUtxo = async (address: string) => {
-    const data = await this.httpService.getAddressUtxo(address);
-    return data;
+    try {
+      const data = await this.httpService.getAddressUtxo(address);
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getAddressUtxo',
+        code: 400,
+      });
+    }
   };
 
   getFeeSummary = async () => {
-    const result = await this.httpService.getFeeSummary();
-    return result;
+    try {
+      const result = await this.httpService.getFeeSummary();
+      return result;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getFeeSummary',
+        code: 400,
+      });
+    }
   };
 }
