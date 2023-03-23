@@ -2,17 +2,25 @@ import { KeyPair, Signature, SignIdentity } from '@dfinity/agent';
 import * as secp256k1 from '@noble/secp256k1';
 import { Secp256k1PublicKey, JsonableSecp256k1Identity } from '@dfinity/identity-secp256k1';
 import { fromHexString, toHexString } from '../snap/util';
+import { Delegation } from 'nostr-tools/lib/nip26';
 
-export class SchorrIdentity extends SignIdentity {
+export type Parameters = {
+  pubkey: string; // the key to whom the delegation will be given
+  kind: number | undefined;
+  until: number | undefined; // delegation will only be valid until this date
+  since: number | undefined; // delegation will be valid from this date on
+};
+
+export class SchnorrIdentity extends SignIdentity {
   /**
    * Generates an identity. If a seed is provided, the keys are generated from the
    * seed according to BIP 0032. Otherwise, the key pair is randomly generated.
    * This method throws an error in case the seed is not 32 bytes long or invalid
    * for use as a private key.
    * @param {Uint8Array} seed the optional seed
-   * @returns {SchorrIdentity}
+   * @returns {SchnorrIdentity}
    */
-  public static generate(): SchorrIdentity {
+  public static generate(): SchnorrIdentity {
     const privateKey = secp256k1.utils.randomPrivateKey();
     const publicKeyRaw = secp256k1.schnorr.getPublicKey(privateKey);
 
@@ -20,12 +28,12 @@ export class SchorrIdentity extends SignIdentity {
     return new this(publicKey, privateKey);
   }
 
-  public static fromParsedJson(obj: JsonableSecp256k1Identity): SchorrIdentity {
+  public static fromParsedJson(obj: JsonableSecp256k1Identity): SchnorrIdentity {
     const [publicKeyRaw, privateKeyRaw] = obj;
-    return new SchorrIdentity(Secp256k1PublicKey.fromRaw(fromHexString(publicKeyRaw)), fromHexString(privateKeyRaw));
+    return new SchnorrIdentity(Secp256k1PublicKey.fromRaw(fromHexString(publicKeyRaw)), fromHexString(privateKeyRaw));
   }
 
-  public static fromJSON(json: string): SchorrIdentity {
+  public static fromJSON(json: string): SchnorrIdentity {
     const parsed = JSON.parse(json);
     if (Array.isArray(parsed)) {
       if (typeof parsed[0] === 'string' && typeof parsed[1] === 'string') {
@@ -40,20 +48,20 @@ export class SchorrIdentity extends SignIdentity {
    * generates an identity from a public and private key. Please ensure that you are generating these keys securely and protect the user's private key
    * @param {ArrayBuffer} publicKey
    * @param {ArrayBuffer} privateKey
-   * @returns {SchorrIdentity}
+   * @returns {SchnorrIdentity}
    */
-  public static fromKeyPair(publicKey: ArrayBuffer, privateKey: ArrayBuffer): SchorrIdentity {
-    return new SchorrIdentity(Secp256k1PublicKey.fromRaw(publicKey), privateKey);
+  public static fromKeyPair(publicKey: ArrayBuffer, privateKey: ArrayBuffer): SchnorrIdentity {
+    return new SchnorrIdentity(Secp256k1PublicKey.fromRaw(publicKey), privateKey);
   }
 
   /**
    * generates an identity from an existing secret key, and is the correct method to generate an identity from a seed phrase. Please ensure you protect the user's private key.
    * @param {ArrayBuffer} secretKey
-   * @returns {SchorrIdentity}
+   * @returns {SchnorrIdentity}
    */
-  public static fromSecretKey(secretKey: ArrayBuffer): SchorrIdentity {
+  public static fromSecretKey(secretKey: ArrayBuffer): SchnorrIdentity {
     const publicKey = secp256k1.schnorr.getPublicKey(new Uint8Array(secretKey));
-    const identity = SchorrIdentity.fromKeyPair(publicKey, new Uint8Array(secretKey));
+    const identity = SchnorrIdentity.fromKeyPair(publicKey, new Uint8Array(secretKey));
     return identity;
   }
 
@@ -61,9 +69,9 @@ export class SchorrIdentity extends SignIdentity {
    * Generates an identity from a seed phrase. Use carefully - seed phrases should only be used in secure contexts, and you should avoid having users copying and pasting seed phrases as much as possible.
    * @param {string | string[]} seedPhrase - either an array of words or a string of words separated by spaces.
    * @param password - optional password to be used by bip39
-   * @returns SchorrIdentity
+   * @returns SchnorrIdentity
    */
-  // public static fromSeedPhrase(seedPhrase: string | string[], password?: string | undefined): SchorrIdentity {
+  // public static fromSeedPhrase(seedPhrase: string | string[], password?: string | undefined): SchnorrIdentity {
   //   // Convert to string for convenience
   //   const phrase = Array.isArray(seedPhrase) ? seedPhrase.join(' ') : seedPhrase;
   //   // Warn if provided phrase is not conventional
@@ -75,7 +83,7 @@ export class SchorrIdentity extends SignIdentity {
   //   const root = hdkey.fromMasterSeed(seed);
   //   const addrnode = root.derive("m/44'/223'/0'/0/0");
 
-  //   return SchorrIdentity.fromSecretKey(addrnode.privateKey);
+  //   return SchnorrIdentity.fromSecretKey(addrnode.privateKey);
   // }
 
   protected _publicKey: Secp256k1PublicKey;
@@ -128,5 +136,23 @@ export class SchorrIdentity extends SignIdentity {
     }
 
     return signature.buffer as Signature;
+  }
+
+  public async createDelegation(parameters: Parameters): Promise<Delegation> {
+    let conditions = [];
+    if ((parameters.kind || -1) >= 0) conditions.push(`kind=${parameters.kind}`);
+    if (parameters.until) conditions.push(`created_at<${parameters.until}`);
+    if (parameters.since) conditions.push(`created_at>${parameters.since}`);
+    let cond = conditions.join('&');
+    if (cond === '') throw new Error('refusing to create a delegation without any conditions');
+    let msg = new TextEncoder().encode(`nostr:delegation:${parameters.pubkey}:${cond}`);
+    let sig = secp256k1.utils.bytesToHex(new Uint8Array(await this.sign(msg)));
+
+    return {
+      from: toHexString(this.getPublicKey().toRaw()),
+      to: parameters.pubkey,
+      cond,
+      sig,
+    };
   }
 }

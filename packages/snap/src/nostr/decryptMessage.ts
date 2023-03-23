@@ -1,20 +1,10 @@
-import * as secp from '@noble/secp256k1';
 import { getIdentity } from '../schnorr/getIdentity';
-import browserifyCipher from 'browserify-cipher';
-import { fromHexString, toHexString } from '../snap/util';
 import { EncryptMessageResponse } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
-import { SchorrIdentity } from '../schnorr/identity';
+import { NostrIdentity } from './nostr_identity';
 
-export async function decryptMessage(wallet: SnapsGlobalObject, theirPublicKey: string, cipherText: string): Promise<EncryptMessageResponse> {
+export async function decryptMessage(wallet: SnapsGlobalObject, theirPublicKey: string, cipherText: string): Promise<string> {
   const identityString = await getIdentity(wallet);
-  const identity = SchorrIdentity.fromJSON(identityString);
-
-  const [emsg, iv] = cipherText.split('?iv=');
-
-  let sharedPoint = toHexString(secp.getSharedSecret(toHexString(new Uint8Array(identity.getKeyPair().secretKey)), '02' + theirPublicKey));
-  let sharedX = sharedPoint.substring(2, 64 + 2);
-  let deCipher = browserifyCipher.createDecipheriv('aes-256-cbc', new Uint8Array(fromHexString(sharedX)), new Uint8Array(Buffer.from(iv, 'base64')));
-  let decryptedMessage = deCipher.update(emsg, 'base64');
-  return decryptedMessage + deCipher.final('utf8');
+  const identity = await NostrIdentity.fromSchnorr(wallet, NostrIdentity.fromJSON(identityString));
+  return identity.decrypt(theirPublicKey, cipherText);
 }

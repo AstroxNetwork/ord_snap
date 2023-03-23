@@ -68,6 +68,7 @@
     "bs58check": "^3.0.1",
     "deepmerge": "^4.2.2",
     "ecpair": "^2.1.0",
+    "nostr-tools": "^1.7.5",
     "secp256k1": "^4.0.3",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.7.0",

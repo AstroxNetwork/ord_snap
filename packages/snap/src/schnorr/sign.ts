@@ -6,12 +6,12 @@ import { getIdentity } from './getIdentity';
 // import { sha256 } from 'js-sha256';
 import { fromHexString, toHexString } from '../snap/util';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
-import { SchorrIdentity } from './identity';
+import { SchnorrIdentity } from './identity';
 
 export async function sign(wallet: SnapsGlobalObject, message: string): Promise<SignMessageResponse> {
   try {
     const identityString = await getIdentity(wallet);
-    const identity = SchorrIdentity.fromJSON(identityString);
+    const identity = SchnorrIdentity.fromJSON(identityString);
     let signature = await identity.sign(fromHexString(message));
     return { error: null, signature: toHexString(signature) };
   } catch (e) {
@@ -22,7 +22,7 @@ export async function sign(wallet: SnapsGlobalObject, message: string): Promise<
 export async function signRawMessasge(wallet: SnapsGlobalObject, rawMessage: string): Promise<SignRawMessageResponse> {
   try {
     const identityString = await getIdentity(wallet);
-    const identity = SchorrIdentity.fromJSON(identityString);
+    const identity = SchnorrIdentity.fromJSON(identityString);
 
     const confirmation = await showConfirmationDialog(wallet, {
       description: `It will be signed with address: ${identity.getPrincipal().toText()}`,
