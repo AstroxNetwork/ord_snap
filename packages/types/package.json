@@ -1,6 +1,6 @@
 {
   "name": "@astrox/ord-snap-types",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "main": "build/index.js",
   "module": "build/index.js",
   "types": "build/index.d.ts",
@@ -23,7 +23,7 @@
   "scripts": {
     "test": "exit 0"
   },
-  "gitHead": "01aa4ac3af4425ab4890a759caeada91b3d98084",
+  "gitHead": "d2b5fea747efb564190c2a51435a00430068ae97",
   "dependencies": {
     "@dfinity/identity-secp256k1": "^0.15.4",
     "@dfinity/principal": "^0.15.4",
