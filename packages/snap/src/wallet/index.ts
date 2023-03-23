@@ -364,7 +364,7 @@ export class OrdWallet {
   pushTx = async (rawtx: string): Promise<string> => {
     try {
       const txid = await this.httpService.pushTx(rawtx);
-      return JSON.parse(txid).result as string;
+      return txid as string;
     } catch (error) {
       throwError({
         message: (error as Error).message,
