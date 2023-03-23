@@ -1,6 +1,6 @@
 {
   "name": "@astrox/ord-snap-adapter",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "main": "build/index.js",
   "module": "build/index.js",
   "types": "build/index.d.ts",
@@ -21,7 +21,7 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "@astrox/ord-snap-types": "^0.0.18",
+    "@astrox/ord-snap-types": "^0.0.19",
     "@dfinity/agent": "^0.15.4",
     "@dfinity/candid": "^0.15.4",
     "@dfinity/identity": "^0.15.4",
@@ -29,5 +29,5 @@
     "@dfinity/principal": "^0.15.4",
     "tslib": "^2.5.0"
   },
-  "gitHead": "af52d3ee80ea97c6eb795ba0296d5f9432e71bc9"
+  "gitHead": "a3f6795ca6f066d4990a1cfaa47fd1c33b873378"
 }
