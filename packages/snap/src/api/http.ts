@@ -24,6 +24,17 @@ export interface HttpAgentRequestTransformFn {
 const API_DOMAIN = 'astrox.app';
 const API_SUB_DOMAIN = '.astrox.app';
 
+export interface ServiceResponse<T> {
+  status: API_STATUS;
+  message: string;
+  result: T;
+}
+
+export enum API_STATUS {
+  FAILED = 0,
+  SUCCESS = 1,
+}
+
 export interface HttpAgentOptions {
   // A surrogate to the global fetch function. Useful for testing.
   fetch?: typeof fetch;
@@ -157,7 +168,7 @@ export class HttpClient {
     this._pipeline.splice(i >= 0 ? i : this._pipeline.length, 0, Object.assign(fn, { priority }));
   }
 
-  public async httpGet(endpoint: string, body: Record<string, unknown>): Promise<Response> {
+  public async httpGet<T>(endpoint: string, body: Record<string, unknown>): Promise<ServiceResponse<T>> {
     let headers: Record<string, string> = this._credentials
       ? {
           Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64'),
@@ -190,9 +201,9 @@ export class HttpClient {
     const response = await this._requestAndRetry(() =>
       this._fetch(new Request(url), { headers, ...this._fetchOptions, mode: 'cors', cache: 'default' }),
     );
-    return response;
+    return (await response.json()) as ServiceResponse<T>;
   }
-  public async httpPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {
+  public async httpPost<T>(endpoint: string, body: Record<string, unknown>): Promise<ServiceResponse<T>> {
     let host = this._host.toString();
     if (host.endsWith('/')) {
       host = host.slice(0, host.length - 1);
@@ -222,7 +233,7 @@ export class HttpClient {
         body: transformed.body,
       }),
     );
-    return response;
+    return (await response.json()) as ServiceResponse<T>;
   }
 
   private async _requestAndRetry(request: () => Promise<Response>, tries = 0): Promise<Response> {
@@ -243,7 +254,7 @@ export class HttpClient {
       }
     }
 
-    return response;
+    return await response.json();
   }
 
   protected _transform(request: HttpRequest): Promise<HttpRequest> {

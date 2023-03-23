@@ -2,12 +2,7 @@ import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { StorageService } from '../snap/storage';
 import { FeeSummary, InscriptionSummary, Inscription, UTXO, TxHistoryItem, AppSummary, BitcoinBalance } from '@astrox/ord-snap-types';
 
-import { HttpAgentOptions, HttpClient } from './http';
-
-enum API_STATUS {
-  FAILED = 0,
-  SUCCESS = 1,
-}
+import { HttpAgentOptions, HttpClient, API_STATUS } from './http';
 
 export class HttpService {
   private httpClient: HttpClient;
@@ -29,9 +24,9 @@ export class HttpService {
   async getWalletConfig(): Promise<any> {
     const data = await this.httpClient.httpGet('/v1/wallet/config', {});
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return await data.json();
+    return data.result;
   }
 
   async getAddressBalance(address: string): Promise<BitcoinBalance> {
@@ -39,9 +34,9 @@ export class HttpService {
       address,
     });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as BitcoinBalance;
+    return data.result as BitcoinBalance;
   }
 
   async getMultiAddressBalance(addresses: string): Promise<BitcoinBalance[]> {
@@ -49,9 +44,9 @@ export class HttpService {
       addresses,
     });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as BitcoinBalance[];
+    return data.result as BitcoinBalance[];
   }
 
   async getAddressUtxo(address: string): Promise<UTXO[]> {
@@ -59,9 +54,9 @@ export class HttpService {
       address,
     });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as UTXO[];
+    return data.result as UTXO[];
   }
 
   async getAddressInscriptions(address: string): Promise<Inscription[]> {
@@ -69,9 +64,9 @@ export class HttpService {
       address,
     });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as Inscription[];
+    return data.result as Inscription[];
   }
 
   async getAddressRecentHistory(address: string): Promise<TxHistoryItem[]> {
@@ -79,25 +74,25 @@ export class HttpService {
       address,
     });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as TxHistoryItem[];
+    return data.result as TxHistoryItem[];
   }
 
   async getInscriptionSummary(): Promise<InscriptionSummary> {
     const data = await this.httpClient.httpGet('/v1/inscription-summary', {});
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as InscriptionSummary;
+    return data.result as InscriptionSummary;
   }
 
   async getAppSummary(): Promise<AppSummary> {
     const data = await this.httpClient.httpGet('/v1/app-summary', {});
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as AppSummary;
+    return data.result as AppSummary;
   }
 
   async pushTx(rawtx: string): Promise<string> {
@@ -105,25 +100,25 @@ export class HttpService {
       rawtx,
     });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return JSON.stringify(await data.json()) as string;
+    return data.result as string;
   }
 
   async getFeeSummary(): Promise<FeeSummary> {
     const data = await this.httpClient.httpGet('/v1/fee-summary', {});
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return (await data.json()) as FeeSummary;
+    return data.result as FeeSummary;
   }
 
   async getDomainInfo(domain: string) {
     const data = await this.httpClient.httpGet('/v1/address/search', { domain });
     if (data.status == API_STATUS.FAILED) {
-      throw new Error(await data.json());
+      throw new Error(data.message);
     }
-    return await data.json();
+    return data.result;
   }
 
   async saveHttpService(): Promise<boolean> {

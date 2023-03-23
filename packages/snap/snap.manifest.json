@@ -1,9 +1,9 @@
 {
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "The ord snap.",
   "proposedName": "OrdSnap",
   "source": {
-    "shasum": "obexRMvI0CoMNVIVbHOlllxx9mzl9+7515A3HOO//5U=",
+    "shasum": "ajbkQV/ZIdhfXU+ycADLmjUFvB809g2DDlc8u9jcyWA=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

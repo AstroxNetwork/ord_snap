@@ -122,9 +122,10 @@ export function Intro() {
       )
       console.log(tx)
     } catch (error) {
-      console.log(
-        (JSON.parse((error as Error).message) as ErrorPayload).message,
-      )
+      throw error
+      // console.log(
+      //   (JSON.parse((error as Error).message) as ErrorPayload).message,
+      // )
     }
   }
 
@@ -132,7 +133,7 @@ export function Intro() {
     console.log(snapIdentity?.api)
     await snapIdentity?.api.initWallet(host, {
       "X-Client": "UniSat Wallet",
-      "X-Version": "1.1.10",
+      "X-Version": "1.1.12",
       "Content-Type": "application/json;charset=utf-8",
     })
   }
