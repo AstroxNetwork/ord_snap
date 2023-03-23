@@ -10,9 +10,4 @@ export function throwError({ message, stack, code }: { message: string; stack: s
   throw new Error(str);
 }
 
-export interface ErrorPaylaod {
-  message: string;
-  fullMessage: string;
-  stack: string;
-  code: number;
-}
+

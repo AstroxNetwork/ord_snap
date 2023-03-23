@@ -3,6 +3,7 @@ import { OrdTransaction, UnspentOutput } from './OrdTransaction';
 import { OrdUnspendOutput, UTXO_DUST } from './OrdUnspendOutput';
 import * as bitcoin from 'bitcoinjs-lib';
 import ecc from '@bitcoinerlab/secp256k1';
+import { satoshisToAmount } from './helpers';
 bitcoin.initEccLib(ecc);
 
 export async function createSendBTC({
@@ -29,88 +30,60 @@ export async function createSendBTC({
   const tx = new OrdTransaction(wallet, network, pubkey, feeRate);
   tx.setChangeAddress(changeAddress);
 
-  let needAmount = toAmount;
-
-  const nonOrdUtxos: OrdUnspendOutput[] = [];
-  const ordUtxos: OrdUnspendOutput[] = [];
+  const nonOrdUtxos: UnspentOutput[] = [];
+  const ordUtxos: UnspentOutput[] = [];
   utxos.forEach(v => {
-    const ordUtxo = new OrdUnspendOutput(v);
     if (v.ords.length > 0) {
-      ordUtxos.push(ordUtxo);
+      ordUtxos.push(v);
     } else {
-      nonOrdUtxos.push(ordUtxo);
+      nonOrdUtxos.push(v);
     }
   });
-
-  ordUtxos.sort((a, b) => a.getLastUnitSatoshis() - b.getLastUnitSatoshis());
-
-  for (let i = 0; i < ordUtxos.length; i++) {
-    const ordUtxo = ordUtxos[i];
-    if (ordUtxo.hasOrd()) {
-      let used = false;
-      let tmpOutputCounts = 0;
-      for (let j = 0; j < ordUtxo.ordUnits.length; j++) {
-        const unit = ordUtxo.ordUnits[j];
-        if (unit.hasOrd()) {
-          tx.addChangeOutput(unit.satoshis);
-          tmpOutputCounts++;
-          continue;
-        }
-        if (needAmount > unit.satoshis + UTXO_DUST) {
-          tx.addOutput(toAddress, unit.satoshis);
-          needAmount -= unit.satoshis;
-          used = true;
-          continue;
-        }
-
-        if (needAmount >= UTXO_DUST && unit.satoshis >= needAmount + UTXO_DUST) {
-          tx.addOutput(toAddress, needAmount);
-          tx.addChangeOutput(unit.satoshis - needAmount);
-          needAmount = 0;
-          used = true;
-          continue;
-        }
-
-        // otherwise
-        tx.addChangeOutput(unit.satoshis);
-        tmpOutputCounts++;
-      }
-      if (used) {
-        tx.addInput(ordUtxo.utxo);
-      } else {
-        if (tmpOutputCounts > 0) {
-          tx.removeRecentOutputs(tmpOutputCounts);
-        }
-      }
-    }
-    if (needAmount == 0) break;
-  }
 
   nonOrdUtxos.forEach(v => {
-    tx.addInput(v.utxo);
+    tx.addInput(v);
   });
 
-  let lastOutput = tx.outputs[tx.outputs.length - 1];
-  if (lastOutput) {
-    if (lastOutput.address === tx.changedAddress) {
-      tx.addOutput(toAddress, needAmount);
-    } else {
-      lastOutput.value += needAmount;
-    }
-  } else {
-    tx.addOutput(toAddress, needAmount);
-  }
-  const unspent = tx.getUnspent();
-  if (unspent < 0) {
+  tx.addOutput(toAddress, toAmount);
+
+  if (nonOrdUtxos.length === 0) {
     throw new Error('Balance not enough');
   }
-  if (unspent >= UTXO_DUST) {
-    tx.addChangeOutput(unspent);
-  }
 
-  const isEnough = await tx.isEnoughFee();
-  if (!isEnough) {
-    await tx.adjustFee(force);
+  if (force) {
+    const unspent = tx.getUnspent();
+    if (unspent >= UTXO_DUST) {
+      tx.addChangeOutput(unspent);
+    }
+
+    const networkFee = await tx.calNetworkFee();
+    const output = tx.outputs.find(v => v.address === toAddress);
+    if (output.value < networkFee) {
+      throw new Error(`Balance not enough. Need ${satoshisToAmount(networkFee)} BTC as network fee`);
+    }
+    output.value -= networkFee;
+  } else {
+    const unspent = tx.getUnspent();
+    if (unspent === 0) {
+      throw new Error('Balance not enough to pay network fee.');
+    }
+
+    // add dummy output
+    tx.addChangeOutput(1);
+
+    const networkFee = await tx.calNetworkFee();
+    if (unspent < networkFee) {
+      throw new Error(`Balance not enough. Need ${satoshisToAmount(networkFee)} BTC as network fee, but only ${satoshisToAmount(unspent)} BTC.`);
+    }
+
+    const leftAmount = unspent - networkFee;
+    if (leftAmount >= UTXO_DUST) {
+      // change dummy output to true output
+      tx.getChangeOutput().value = leftAmount;
+    } else {
+      // remove dummy output
+      tx.removeChangeOutput();
+    }
   }
 
   const psbt = await tx.createSignedPsbt();
@@ -143,41 +116,30 @@ export async function createSendOrd({
   const tx = new OrdTransaction(wallet, network, pubkey, feeRate);
   tx.setChangeAddress(changeAddress);
 
-  const nonOrdUtxos: OrdUnspendOutput[] = [];
-  const ordUtxos: OrdUnspendOutput[] = [];
+  const nonOrdUtxos: UnspentOutput[] = [];
+  const ordUtxos: UnspentOutput[] = [];
   utxos.forEach(v => {
-    const ordUtxo = new OrdUnspendOutput(v);
     if (v.ords.length > 0) {
-      ordUtxos.push(ordUtxo);
+      ordUtxos.push(v);
     } else {
-      nonOrdUtxos.push(ordUtxo);
+      nonOrdUtxos.push(v);
     }
   });
-
-  ordUtxos.sort((a, b) => a.getLastUnitSatoshis() - b.getLastUnitSatoshis());
 
   // find NFT
   let found = false;
 
   for (let i = 0; i < ordUtxos.length; i++) {
     const ordUtxo = ordUtxos[i];
-    let changeCount = 0;
-    for (let j = 0; j < ordUtxo.ordUnits.length; j++) {
-      const unit = ordUtxo.ordUnits[j];
-      if (unit.ords.find(v => v.id == toOrdId)) {
-        tx.addOutput(toAddress, unit.satoshis);
-        found = true;
-      } else {
-        tx.addChangeOutput(unit.satoshis);
-        changeCount++;
+    if (ordUtxo.ords.find(v => v.id == toOrdId)) {
+      if (ordUtxo.ords.length > 1) {
+        throw new Error('Multiple inscriptions! Please split them first.');
       }
+      tx.addInput(ordUtxo);
+      tx.addOutput(toAddress, ordUtxo.satoshis);
+      found = true;
+      break;
     }
-    if (found) {
-      tx.addInput(ordUtxo.utxo);
-    } else {
-      tx.removeRecentOutputs(changeCount);
-    }
-    if (found) break;
   }
 
   if (!found) {
@@ -185,26 +147,33 @@ export async function createSendOrd({
   }
 
   // format NFT
-  // if (tx.outputs.length == 1 && tx.outputs[0].value < UTXO_DUST) {
-  //   tx.outputs[0].value = UTXO_DUST;
-  // }
+
   tx.outputs[0].value = outputValue;
 
   nonOrdUtxos.forEach(v => {
-    tx.addInput(v.utxo);
+    tx.addInput(v);
   });
 
   const unspent = tx.getUnspent();
-  if (unspent < 0) {
-    throw new Error('Balance not enough');
-  }
-  if (unspent >= UTXO_DUST) {
-    tx.addChangeOutput(unspent);
+  if (unspent == 0) {
+    throw new Error('Balance not enough to pay network fee.');
   }
 
-  const isEnough = await tx.isEnoughFee();
-  if (!isEnough) {
-    await tx.adjustFee();
+  // add dummy output
+  tx.addChangeOutput(1);
+
+  const networkFee = await tx.calNetworkFee();
+  if (unspent < networkFee) {
+    throw new Error(`Balance not enough. Need ${satoshisToAmount(networkFee)} BTC as network fee, but only ${satoshisToAmount(unspent)} BTC.`);
+  }
+
+  const leftAmount = unspent - networkFee;
+  if (leftAmount >= UTXO_DUST) {
+    // change dummy output to true output
+    tx.getChangeOutput().value = leftAmount;
+  } else {
+    // remove dummy output
+    tx.removeChangeOutput();
   }
 
   const psbt = await tx.createSignedPsbt();

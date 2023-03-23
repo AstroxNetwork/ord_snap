@@ -177,6 +177,18 @@ export class OrdTransaction {
     }
   }
 
+  async calNetworkFee() {
+    const psbt = await this.createSignedPsbt();
+    let txSize = psbt.extractTransaction().toBuffer().length;
+    psbt.data.inputs.forEach(v => {
+      if (v.finalScriptWitness) {
+        txSize -= v.finalScriptWitness.length * 0.75;
+      }
+    });
+    const fee = Math.ceil(txSize * this.feeRate);
+    return fee;
+  }
+
   addOutput(address: string, value: number) {
     this.outputs.push({
       address,

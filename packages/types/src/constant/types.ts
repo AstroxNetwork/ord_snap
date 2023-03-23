@@ -150,3 +150,10 @@ export interface TXSendBTC {
   txType: TxType;
   txId?: string;
 }
+
+export interface ErrorPayload {
+  message: string;
+  fullMessage: string;
+  stack: string;
+  code: number;
+}
