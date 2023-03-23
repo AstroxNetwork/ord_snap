@@ -27,7 +27,6 @@ export async function isMetamaskSnapsSupported(): Promise<boolean> {
  * @returns
  */
 export async function isSnapInstalled(snapOrigin: string, version?: string): Promise<boolean> {
-  console.log(await getWalletSnaps());
   try {
     return !!Object.values(await getWalletSnaps()).find(permission => permission.id === snapOrigin && (!version || permission.version === version));
   } catch (e) {
