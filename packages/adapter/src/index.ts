@@ -19,4 +19,4 @@ export {
 export { MetamaskOrdSnap, enableOrdSnap, SnapIdentity } from './snap';
 // import './types';
 export * from './types';
-export { hasMetaMask, GetSnapsResponse, getWalletSnaps, isMetamaskSnapsSupported, isSnapInstalled } from './util';
+export { hasMetaMask, getWalletSnaps, isMetamaskSnapsSupported, isSnapInstalled } from './util';

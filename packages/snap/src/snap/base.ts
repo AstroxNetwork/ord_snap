@@ -1,5 +1,5 @@
 import { getBIP44AddressKeyDeriver, JsonBIP44CoinTypeNode, SLIP10Node } from '@metamask/key-tree';
-import { MetamaskState } from '@astrox/ord-snap-types';
+import { MetamaskState, RequestSnapsResult } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 
 export async function getPrivateKeyFromWallet(snap: SnapsGlobalObject, path?: string, index?: number): Promise<Uint8Array> {

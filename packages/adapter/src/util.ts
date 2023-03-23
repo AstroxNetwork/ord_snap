@@ -1,3 +1,4 @@
+import { GetSnapsResponse } from '@astrox/ord-snap-types';
 import './types';
 export function hasMetaMask(): boolean {
   if (!(window as any).ethereum) {
@@ -6,14 +7,6 @@ export function hasMetaMask(): boolean {
   return (window as any).ethereum.isMetaMask;
 }
 
-export type GetSnapsResponse = {
-  [k: string]: {
-    permissionName?: string;
-    id?: string;
-    version?: string;
-    initialPermissions?: { [k: string]: unknown };
-  };
-};
 export async function getWalletSnaps(): Promise<GetSnapsResponse> {
   return (await window.ethereum.request({
     method: 'wallet_getSnaps',

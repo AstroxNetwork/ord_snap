@@ -1,4 +1,4 @@
-import { Delegation, TXSendBTC, UnsignedEvent, UTXO } from './constant/types';
+import { Delegation, GetSnapsResponse, RequestSnapsResult, TXSendBTC, UnsignedEvent, UTXO } from './constant/types';
 import { MetamaskOrdRpcRequest } from './methods';
 import { EncryptMessageResponse, SignMessageResponse, SignRawMessageResponse } from './wallet';
 
@@ -39,7 +39,8 @@ export type MetamaskRpcRequest = WalletEnableRequest | GetSnapsRequest | SnapRpc
 export interface OrdSnapApi {
   getRawPublicKey(): Promise<string>;
   getPrincipal(): Promise<string>;
-  configure(configuration: Partial<SnapConfig>): Promise<void>;
+  configure(configuration: Partial<SnapConfig>): Promise<RequestSnapsResult>;
+  getAppInfo(): Promise<GetSnapsResponse[string]>;
   nostr: {
     sign(message: string): Promise<SignMessageResponse>;
     signRawMessage(message: string): Promise<SignRawMessageResponse>;

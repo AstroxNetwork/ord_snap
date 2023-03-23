@@ -1,5 +1,5 @@
-import { OrdSnapApi, SnapConfig } from '@astrox/ord-snap-types';
-import { hasMetaMask, isMetamaskSnapsSupported, isSnapInstalled } from './util';
+import { OrdSnapApi, SnapConfig, RequestSnapsResult, WalletGetSnapsResult } from '@astrox/ord-snap-types';
+import { getWalletSnaps, hasMetaMask, isMetamaskSnapsSupported, isSnapInstalled } from './util';
 import {
   configure,
   decryptMessage,
@@ -39,6 +39,7 @@ export class MetamaskOrdSnap {
     const api = await this.getOrdSnapApi();
     const publicKey = await api.getRawPublicKey();
     const principal = await api.getPrincipal();
+
     return { api, publicKey, principal };
   }
 
@@ -52,6 +53,7 @@ export class MetamaskOrdSnap {
       configure: configure.bind(this),
       getPrincipal: getPrincipal.bind(this),
       getRawPublicKey: getRawPublicKey.bind(this),
+      getAppInfo: async () => (await getWalletSnaps())[this.snapId],
       nostr: {
         sign: sign.bind(this),
         signRawMessage: signRawMessage.bind(this),
@@ -129,7 +131,7 @@ export async function enableOrdSnap(
   const api = await snap.getOrdSnapApi();
   // set initial configuration
   await api.configure(config);
-  console.log({ api });
+
   // return snap object
   return snap;
 }

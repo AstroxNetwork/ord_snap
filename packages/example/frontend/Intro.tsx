@@ -8,10 +8,14 @@ import {
   TXSendBTC,
   ErrorPayload,
   Delegation,
+  GetSnapsResponse,
 } from "@astrox/ord-snap-types"
 // import { canisterId, createActor } from "./services"
 
 export function Intro() {
+  const [appInfo, setAppInfo] = useState<GetSnapsResponse[string] | undefined>(
+    undefined,
+  )
   const [publicKey, setPublicKey] = useState<string | undefined>(undefined)
   const [nPub, setNPub] = useState<string | undefined>(undefined)
   const [nProfile, setNProfile] = useState<string | undefined>(undefined)
@@ -74,7 +78,9 @@ export function Intro() {
   }, [])
 
   const getPublicKey = async () => {
+    console.log(snapIdentity?.api.getAppInfo())
     setPublicKey(snapIdentity?.publicKey)
+    setAppInfo(await snapIdentity?.api.getAppInfo())
     setNPub(await snapIdentity?.api.nostr.getNPub())
     setNProfile(await snapIdentity?.api.nostr.getNProfile())
   }
@@ -187,6 +193,35 @@ export function Intro() {
         <p style={{ fontSize: "2em", marginBottom: "0.5em" }}>
           OrdSnap: Bitcoin in MetaMask
         </p>
+        <h1>AppInfo</h1>
+        <div
+          style={{
+            display: "flex",
+            fontSize: "0.7em",
+            textAlign: "left",
+            padding: "2em",
+            borderRadius: "30px",
+            flexDirection: "column",
+            background: "rgb(220 218 224 / 25%)",
+            flex: 1,
+            width: "32em",
+          }}
+        >
+          {installed ? (
+            <>
+              <div
+                style={{
+                  wordBreak: "break-all",
+                  maxWidth: "100%",
+                  margin: "1em 0",
+                }}
+              >
+                <code>App Info </code>
+                <p>{JSON.stringify(appInfo)}</p>
+              </div>
+            </>
+          ) : null}
+        </div>
         <h1>Wallet</h1>
         <div
           style={{

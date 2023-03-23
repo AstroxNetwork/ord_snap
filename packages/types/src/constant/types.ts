@@ -194,3 +194,38 @@ export type Delegation = {
   cond: string;
   sig: string;
 };
+
+export interface GetSnapsResponse {
+  [k: string]: {
+    permissionName?: string;
+    id?: string;
+    version?: string;
+    initialPermissions?: { [k: string]: unknown };
+  };
+}
+
+export interface RequestSnapsResult {
+  [snapId: string]: WalletGetSnapsResult[string];
+}
+
+export interface WalletGetSnapsResult {
+  [snapId: string]: {
+    /**
+     * The ID of the Snap.
+     */
+    id: string;
+    /**
+     * The initial permissions of the Snap, which will be requested when it is
+     * installed.
+     */
+    initialPermissions: any;
+    /**
+     * The name of the permission used to invoke the Snap.
+     */
+    permissionName: string;
+    /**
+     * The version of the Snap.
+     */
+    version: string;
+  };
+}
