@@ -254,7 +254,7 @@ export class HttpClient {
       }
     }
 
-    return await response.json();
+    return response;
   }
 
   protected _transform(request: HttpRequest): Promise<HttpRequest> {

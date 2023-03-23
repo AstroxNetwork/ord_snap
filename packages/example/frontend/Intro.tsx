@@ -108,7 +108,7 @@ export function Intro() {
     console.log({
       sendTo,
       sendAmount,
-      sendUtxos: JSON.parse(sendUtxos!).result as UTXO[],
+      sendUtxos: JSON.parse(sendUtxos!) as UTXO[],
       sendAutoAdjust,
       sendFeeRate,
     })
@@ -116,7 +116,7 @@ export function Intro() {
       const tx = await snapIdentity?.api.sendBTC(
         sendTo!,
         sendAmount!,
-        JSON.parse(sendUtxos!).result as UTXO[],
+        JSON.parse(sendUtxos!) as UTXO[],
         sendAutoAdjust!,
         sendFeeRate!,
       )
