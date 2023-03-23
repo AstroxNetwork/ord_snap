@@ -52,7 +52,7 @@ export function Intro() {
   // to: string, amount: number, utxos: UTXO[], autoAdjust: boolean, feeRate: number
   const [sendTo, setSendTo] = useState<string | undefined>(undefined)
   const [sendAmount, setSendAmount] = useState<number | undefined>(undefined)
-  const [sendAutoAdjust, setAutoAdjust] = useState<boolean>(true)
+  const [sendAutoAdjust, setAutoAdjust] = useState<boolean>(false)
   const [sendFeeRate, setSendFeeRate] = useState<number | undefined>(undefined)
 
   const installSnap = useCallback(async () => {
