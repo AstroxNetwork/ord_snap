@@ -1,6 +1,6 @@
 {
   "name": "@astrox/ord-snap",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "private": false,
   "main": "build/index.js",
   "files": [
@@ -39,7 +39,7 @@
     "prepublish": "pnpm run build"
   },
   "dependencies": {
-    "@astrox/ord-snap-types": "^0.0.17",
+    "@astrox/ord-snap-types": "^0.0.18",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.20.2",
     "@bitcoinerlab/secp256k1": "^1.0.2",
@@ -83,5 +83,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "gitHead": "d2b5fea747efb564190c2a51435a00430068ae97"
+  "gitHead": "af52d3ee80ea97c6eb795ba0296d5f9432e71bc9"
 }
