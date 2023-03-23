@@ -1,6 +1,6 @@
 {
   "name": "@astrox/ord-snap-types",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "main": "build/index.js",
   "module": "build/index.js",
   "types": "build/index.d.ts",
