@@ -229,3 +229,33 @@ export interface WalletGetSnapsResult {
     version: string;
   };
 }
+
+export interface SatsRegistrationOp {
+  op: string;
+  p: string;
+  name: string;
+  npub: 'string';
+  lnurl: 'string';
+  additionalProp1: 'string';
+  additionalProp2: 'string';
+  additionalProp3: 'string';
+}
+
+export interface SatsInscriptions {
+  textContent: string;
+  inscriptionId: string;
+  inscriptionIndex: number;
+}
+
+export interface SatsDomainResponse {
+  name: string;
+  inscriptionId: string;
+  owner: string;
+  inscriptionIndex: number;
+  genesisHeight: number;
+  registrationOp: SatsRegistrationOp;
+  nameIndex: number;
+  timestamp: string;
+  queryDecoded: string;
+  inscriptions: SatsInscriptions[];
+}

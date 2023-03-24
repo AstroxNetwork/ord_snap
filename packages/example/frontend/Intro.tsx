@@ -66,6 +66,7 @@ export function Intro() {
   const [sendAmount, setSendAmount] = useState<number | undefined>(undefined)
   const [sendAutoAdjust, setAutoAdjust] = useState<boolean>(false)
   const [sendFeeRate, setSendFeeRate] = useState<number | undefined>(undefined)
+  const [queryDomain, setQueryDomain] = useState<string | undefined>(undefined)
 
   const installSnap = useCallback(async () => {
     const installResult = await initiateOrdSnap("nostr") //mainnet, local, nostr
@@ -119,6 +120,11 @@ export function Intro() {
   const addNextAccount = async () => {
     console.log(snapIdentity?.api)
     const ad = await snapIdentity?.api.ord.addNextAccount()
+    console.log(ad)
+  }
+
+  const getSatsDomainInfo = async () => {
+    const ad = await snapIdentity?.api.ord.getSatsDomainInfo(queryDomain)
     console.log(ad)
   }
 
@@ -266,7 +272,19 @@ export function Intro() {
               <button className="demo-button-2" onClick={initWallet}>
                 Init Wallet
               </button>
-
+              <label style={{ marginBottom: 16, marginTop: 16 }}>
+                Get SatsDomain
+              </label>
+              <input
+                aria-label="Get UTXO"
+                style={{ padding: "1em" }}
+                onChange={async (e) => {
+                  setQueryDomain(e.target.value)
+                }}
+              />
+              <button className="demo-button-2" onClick={getSatsDomainInfo}>
+                Get SatsDomain
+              </button>
               <label style={{ marginBottom: 16, marginTop: 16 }}>
                 Get UTXO
               </label>

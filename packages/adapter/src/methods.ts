@@ -7,6 +7,7 @@ import {
   UTXO,
   TXSendBTC,
   UnsignedEvent,
+  SatsDomainResponse,
 } from '@astrox/ord-snap-types';
 
 import { MetamaskOrdSnap } from './snap';
@@ -65,6 +66,10 @@ export async function addRelays(this: MetamaskOrdSnap, relays: string[]): Promis
   return await sendSnapMethod({ method: 'Nostr_addRelays', params: { relays } }, this.snapId);
 }
 
+export async function getRelays(this: MetamaskOrdSnap): Promise<string[]> {
+  return await sendSnapMethod({ method: 'Nostr_getRelays' }, this.snapId);
+}
+
 export async function getAddress(this: MetamaskOrdSnap): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_getAddress', params: {} }, this.snapId);
 }
@@ -75,6 +80,10 @@ export async function addNextAccount(this: MetamaskOrdSnap): Promise<string> {
 
 export async function initWallet(this: MetamaskOrdSnap, host?: string, headers?: Record<string, unknown>): Promise<string> {
   return await sendSnapMethod({ method: 'Ord_initWallet', params: { host, headers } }, this.snapId);
+}
+
+export async function getSatsDomainInfo(this: MetamaskOrdSnap, domain: string): Promise<SatsDomainResponse> {
+  return await sendSnapMethod({ method: 'Ord_getSatsDomainInfo', params: { domain } }, this.snapId);
 }
 
 export async function getAddressUtxo(this: MetamaskOrdSnap, address: string): Promise<string> {

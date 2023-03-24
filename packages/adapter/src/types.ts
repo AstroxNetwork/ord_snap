@@ -1,4 +1,4 @@
-import { SnapRpcMethodRequest } from '@astrox/ord-snap-types';
+import { SnapRpcMethodRequest, OrdSnapApi } from '@astrox/ord-snap-types';
 
 declare global {
   interface Window {
@@ -9,5 +9,6 @@ declare global {
       request: <T>(request: SnapRpcMethodRequest | { method: string; params?: any }) => Promise<T>;
       on: (eventName: unknown, callback: unknown) => unknown;
     };
+    nostr: OrdSnapApi['nostr'];
   }
 }

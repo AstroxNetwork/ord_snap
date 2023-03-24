@@ -27,3 +27,8 @@ export async function addRelays(wallet: SnapsGlobalObject, relays: string[]): Pr
   const nostr = await getNostr(wallet);
   nostr.addRelays(relays);
 }
+
+export async function getRelays(wallet: SnapsGlobalObject): Promise<string[]> {
+  const nostr = await getNostr(wallet);
+  return nostr.getRelays();
+}

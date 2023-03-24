@@ -30,9 +30,19 @@ export interface ServiceResponse<T> {
   result: T;
 }
 
+export interface CustomResponse<T> {}
+
 export enum API_STATUS {
   FAILED = 0,
   SUCCESS = 1,
+}
+
+export interface OverrideOptions {
+  // Should follow the RequestInit interface, but we intentially support non-standard fields
+  headers?: Record<string, unknown>;
+  // The host to use for the client. By default, uses the same host as
+  // the current page.
+  host?: string;
 }
 
 export interface HttpAgentOptions {
@@ -168,7 +178,7 @@ export class HttpClient {
     this._pipeline.splice(i >= 0 ? i : this._pipeline.length, 0, Object.assign(fn, { priority }));
   }
 
-  public async httpGet<T>(endpoint: string, body: Record<string, unknown>): Promise<ServiceResponse<T>> {
+  public async httpGet<T>(endpoint: string, body: Record<string, unknown>, override: OverrideOptions = {}): Promise<ServiceResponse<T>> {
     let headers: Record<string, string> = this._credentials
       ? {
           Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64'),
@@ -176,10 +186,13 @@ export class HttpClient {
       : {};
 
     if (this._fetchOptions.headers) {
-      headers = { ...headers, ...(this._fetchOptions.headers as any) };
+      headers = { ...headers, ...(this._fetchOptions.headers as any), ...override?.headers };
     }
 
     let host = this._host.toString();
+    if (override && override.host) {
+      host = override.host;
+    }
     if (host.endsWith('/')) {
       host = host.slice(0, host.length - 1);
     }
@@ -203,8 +216,11 @@ export class HttpClient {
     );
     return (await response.json()) as ServiceResponse<T>;
   }
-  public async httpPost<T>(endpoint: string, body: Record<string, unknown>): Promise<ServiceResponse<T>> {
+  public async httpPost<T>(endpoint: string, body: Record<string, unknown>, override: OverrideOptions = {}): Promise<ServiceResponse<T>> {
     let host = this._host.toString();
+    if (override && override.host) {
+      host = override.host;
+    }
     if (host.endsWith('/')) {
       host = host.slice(0, host.length - 1);
     }
@@ -217,6 +233,7 @@ export class HttpClient {
           'Content-Type': 'application/json;charset=utf-8',
           ...(this._fetchOptions.headers as any),
           ...(this._credentials ? { Authorization: 'Basic ' + Buffer.from(this._credentials, 'base64') } : {}),
+          ...override?.headers,
         }),
       },
       endpoint,

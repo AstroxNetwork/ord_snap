@@ -5,7 +5,7 @@ import { HttpService } from '../api/service';
 import { Accounts, OrdKeyring, toXOnly } from '../keyRing/keyring';
 
 import { AddressType, BitcoinBalance, Inscription, NetworkType, ToSignInput, TxHistoryItem, UTXO, TXSendBTC } from '@astrox/ord-snap-types';
-import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES, TxType } from '@astrox/ord-snap-types';
+import { COIN_NAME, COIN_SYMBOL, KEYRING_TYPE, NETWORK_TYPES, TxType, SatsDomainResponse } from '@astrox/ord-snap-types';
 import { toPsbtNetwork, validator } from '../snap/util';
 import { createSendBTC, createSendOrd } from '../ord/ord';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
@@ -35,6 +35,19 @@ export class OrdWallet {
     await this.httpService.saveHttpService();
     await this.keyRing.saveWallets();
   }
+
+  getSatsDomainInfo = async (domain: string): Promise<SatsDomainResponse> => {
+    try {
+      const data = await this.httpService.getSatsDomainInfo(domain);
+      return data;
+    } catch (error) {
+      throwError({
+        message: (error as Error).message,
+        stack: 'Ord_getSatsDomainInfo',
+        code: 400,
+      });
+    }
+  };
 
   getAddressBalance = async (address: string): Promise<BitcoinBalance> => {
     try {

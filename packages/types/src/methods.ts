@@ -99,10 +99,21 @@ export interface AddRelays {
   };
 }
 
+export interface GetRelays {
+  method: 'Nostr_getRelays';
+}
+
 export interface Delegate {
   method: 'Nostr_delegate';
   params: {
     other: string;
+  };
+}
+
+export interface GetSatsDomainInfo {
+  method: 'Ord_getSatsDomainInfo';
+  params: {
+    domain: string;
   };
 }
 
@@ -176,9 +187,11 @@ export type MetamaskOrdRpcRequest =
   | GetNPub
   | SignEvent
   | AddRelays
+  | GetRelays
   | Delegate
   | InitWallet
   | AddNextAccount
+  | GetSatsDomainInfo
   | GetAddress
   | GetAddressUtxo
   | GetAddressBalance

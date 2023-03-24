@@ -1,4 +1,4 @@
-import { Delegation, GetSnapsResponse, RequestSnapsResult, TXSendBTC, UnsignedEvent, UTXO } from './constant/types';
+import { Delegation, GetSnapsResponse, RequestSnapsResult, SatsDomainResponse, TXSendBTC, UnsignedEvent, UTXO } from './constant/types';
 import { MetamaskOrdRpcRequest } from './methods';
 import { EncryptMessageResponse, SignMessageResponse, SignRawMessageResponse } from './wallet';
 
@@ -46,8 +46,10 @@ export interface OrdSnapApi {
     signRawMessage(message: string): Promise<SignRawMessageResponse>;
     encryptMessage(theirPublicKey: string, message: string): Promise<EncryptMessageResponse>;
     decryptMessage(theirPublicKey: string, cipherText: string): Promise<string>;
+    getPublicKey(): Promise<string>;
     getNPub(): Promise<string>;
     getNProfile(): Promise<string>;
+    getRelays(): Promise<string[]>;
     signEvent(unsignedEvent: UnsignedEvent): Promise<string>;
     delegate(other: string): Promise<Delegation>;
     addRelays(relays: string[]): Promise<void>;
@@ -56,6 +58,7 @@ export interface OrdSnapApi {
     initWallet(host?: string, headers?: Record<string, unknown>): Promise<string>;
     getAddress(): Promise<string>;
     addNextAccount(): Promise<string>;
+    getSatsDomainInfo(domain: string): Promise<SatsDomainResponse>;
     getAddressUtxo(address: string): Promise<string>;
     getAddressBalance(address: string): Promise<string>;
     sendBTC(to: string, amount: number, utxos: UTXO[], autoAdjust: boolean, feeRate: number): Promise<TXSendBTC>;

@@ -20,6 +20,8 @@ import {
   signEvent,
   delegate,
   addRelays,
+  getRelays,
+  getSatsDomainInfo,
 } from './methods';
 
 export interface SnapIdentity {
@@ -37,6 +39,7 @@ export class MetamaskOrdSnap {
 
   public async createSnapIdentity(): Promise<SnapIdentity> {
     const api = await this.getOrdSnapApi();
+    injectWindow(api);
     const publicKey = await api.getRawPublicKey();
     const principal = await api.getPrincipal();
 
@@ -59,15 +62,18 @@ export class MetamaskOrdSnap {
         signRawMessage: signRawMessage.bind(this),
         encryptMessage: encryptMessage.bind(this),
         decryptMessage: decryptMessage.bind(this),
+        getPublicKey: getRawPublicKey.bind(this),
         getNPub: getNPub.bind(this),
         getNProfile: getNProfile.bind(this),
         signEvent: signEvent.bind(this),
         delegate: delegate.bind(this),
         addRelays: addRelays.bind(this),
+        getRelays: getRelays.bind(this),
       },
       ord: {
         initWallet: initWallet.bind(this),
         addNextAccount: addNextAccount.bind(this),
+        getSatsDomainInfo: getSatsDomainInfo.bind(this),
         getAddress: getAddress.bind(this),
         getAddressUtxo: getAddressUtxo.bind(this),
         getAddressBalance: getAddressBalance.bind(this),
@@ -134,4 +140,10 @@ export async function enableOrdSnap(
 
   // return snap object
   return snap;
+}
+
+export function injectWindow(api: OrdSnapApi): void {
+  if (typeof window !== 'undefined' && window.nostr === undefined) {
+    window.nostr = api.nostr;
+  }
 }

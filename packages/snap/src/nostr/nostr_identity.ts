@@ -41,6 +41,11 @@ export class NostrIdentity extends SchnorrIdentity {
     await this.storage.setData<string[]>(arr);
     return arr;
   }
+
+  public async getRelays(): Promise<string[]> {
+    return this.relays;
+  }
+
   public async loadRelays(): Promise<string[]> {
     return await this.storage.getData<string[]>();
   }

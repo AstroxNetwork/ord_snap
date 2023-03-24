@@ -13,6 +13,7 @@ import {
   SignEvent,
   Delegate,
   AddRelays,
+  GetSatsDomainInfo,
 } from '@astrox/ord-snap-types';
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { OnRpcRequestHandler } from '@metamask/snaps-types';
@@ -27,7 +28,7 @@ import { OrdKeyring } from './keyRing/keyring';
 import { sign, signRawMessasge } from './schnorr/sign';
 import { HttpService } from './api/service';
 import { OrdWallet } from './wallet';
-import { addRelays, delegate, getNProfile, getNPub, signEvent } from './nostr/api';
+import { addRelays, delegate, getNProfile, getNPub, getRelays, signEvent } from './nostr/api';
 
 declare let snap: SnapsGlobalObject;
 
@@ -93,6 +94,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       return dd;
     case 'Nostr_addRelays':
       return await addRelays(snap, (request as unknown as AddRelays).params.relays);
+    case 'Nostr_getRelays':
+      return await getRelays(snap);
     case 'Ord_initWallet': {
       const http = new HttpService(snap, {
         host: (request as unknown as InitWallet).params.host,
@@ -123,6 +126,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
       const wallet = await OrdWallet.fromStorage(snap);
       const balance = await wallet.getAddressBalance((request as unknown as GetAddressUtxo).params.address);
       return JSON.stringify(balance);
+    }
+    case 'Ord_getSatsDomainInfo': {
+      const wallet = await OrdWallet.fromStorage(snap);
+      const data = await wallet.getSatsDomainInfo((request as unknown as GetSatsDomainInfo).params.domain);
+      return data;
     }
     case 'Ord_sendBTC': {
       const wallet = await OrdWallet.fromStorage(snap);

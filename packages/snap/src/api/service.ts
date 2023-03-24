@@ -1,6 +1,15 @@
 import { SnapsGlobalObject } from '@metamask/snaps-types';
 import { StorageService } from '../snap/storage';
-import { FeeSummary, InscriptionSummary, Inscription, UTXO, TxHistoryItem, AppSummary, BitcoinBalance } from '@astrox/ord-snap-types';
+import {
+  FeeSummary,
+  InscriptionSummary,
+  Inscription,
+  UTXO,
+  TxHistoryItem,
+  AppSummary,
+  BitcoinBalance,
+  SatsDomainResponse,
+} from '@astrox/ord-snap-types';
 
 import { HttpAgentOptions, HttpClient, API_STATUS } from './http';
 
@@ -119,6 +128,19 @@ export class HttpService {
       throw new Error(data.message);
     }
     return data.result;
+  }
+
+  async getSatsDomainInfo(domain: string) {
+    const data = await this.httpClient.httpGet(
+      `/names/${domain}`,
+      {},
+      { headers: { 'Content-Type': 'application/json;charset=utf-8' }, host: 'https://api.sats.id' },
+    );
+    if ((data as any).code == 404) {
+      throw new Error((data as any).error);
+    }
+
+    return data as unknown as SatsDomainResponse;
   }
 
   async saveHttpService(): Promise<boolean> {
