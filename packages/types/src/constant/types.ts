@@ -234,11 +234,11 @@ export interface SatsRegistrationOp {
   op: string;
   p: string;
   name: string;
-  npub: 'string';
-  lnurl: 'string';
-  additionalProp1: 'string';
-  additionalProp2: 'string';
-  additionalProp3: 'string';
+  npub?: string;
+  lnurl?: string;
+  additionalProp1?: string;
+  additionalProp2?: string;
+  additionalProp3?: string;
 }
 
 export interface SatsInscriptions {
