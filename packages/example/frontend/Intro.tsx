@@ -1,4 +1,7 @@
 import React, { createFactory, useCallback, useEffect, useState } from "react"
+import { useRef } from "react"
+import { useNostrEvents, dateToUnix, useProfile } from "nostr-react"
+import { Event as NostrEvent } from "nostr-tools"
 import logo from "./assets/logo-dark.svg"
 import { initiateOrdSnap } from "./services/metamask"
 import { SnapIdentity } from "@astrox/ord-snap-adapter"
@@ -10,9 +13,159 @@ import {
   Delegation,
   GetSnapsResponse,
 } from "@astrox/ord-snap-types"
+import { Avatar, Switch } from "antd"
+import { UserOutlined } from "@ant-design/icons"
+
+import BulletScreen, { StyledBullet } from "rc-bullets-ts"
+
+export function ProfileWidget({ pubkey }: { pubkey: string }) {
+  const { data: userData } = useProfile({
+    pubkey,
+  })
+
+  const [npub, setNpub] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    const length = userData?.npub.length ?? 63
+
+    const prefix = userData?.npub.substring(0, 6)
+    const endFix = userData?.npub.substring(length - 6, length)
+
+    setNpub(`${prefix}...${endFix}`)
+  }, [userData])
+
+  return (
+    <>
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              {userData?.picture ? (
+                <Avatar src={userData?.picture} size={32} />
+              ) : (
+                <Avatar size={32} icon={<UserOutlined />} />
+              )}
+            </div>
+            <div
+              style={{
+                wordBreak: "break-all",
+                marginLeft: 8,
+                fontSize: 16,
+              }}
+            >
+              {userData?.name}
+            </div>
+          </div>
+          <p
+            style={{
+              wordBreak: "break-all",
+
+              marginLeft: 8,
+              fontSize: 12,
+            }}
+          >
+            {npub}
+          </p>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default function Demo({ feed = [] }: { feed: NostrEvent[] }) {
+  // 弹幕屏幕
+  console.log(feed.length)
+  const [screen, setScreen] = useState(null)
+  // 弹幕内容
+  const [enabled, setEnabled] = useState<boolean>(false)
+  const [index, setIndex] = useState(0)
+  useEffect(() => {
+    if (enabled === true) {
+      if (!screen) {
+        // 给页面中某个元素初始化弹幕屏幕，一般为一个大区块。此处的配置项全局生效
+        let s = new BulletScreen(".screen", { duration: 20 })
+        // or
+        // let s=new BulletScreen(document.querySelector('.screen));
+        setScreen(s)
+        sendList(s)
+      } else {
+        sendList(screen)
+      }
+    }
+  }, [enabled, index])
+
+  function sendList(s: BulletScreen) {
+    setTimeout(() => {
+      ;(s! as any).push(
+        <>
+          <p>{feed[index].content}</p>
+        </>,
+      )
+
+      if (index === feed.length - 1) {
+        setScreen(new BulletScreen(".screen", { duration: 20 }))
+        setIndex(0)
+      } else {
+        setIndex(index + 1)
+      }
+    }, 3000)
+  }
+  // 发送弹幕
+  const handleEnabled = () => {
+    setEnabled(!enabled)
+  }
+  return (
+    <main>
+      <div
+        className="screen"
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: enabled ? 999 : -1,
+        }}
+      ></div>
+      <Switch
+        checkedChildren="ON"
+        unCheckedChildren="OFF"
+        onClick={handleEnabled}
+        style={{ position: "fixed", top: 32, right: 32, zIndex: 999 }}
+      />
+    </main>
+  )
+}
+// import ReactTimeAgo from "react-time-ago"
 // import { canisterId, createActor } from "./services"
 
 export function Intro() {
+  const now = useRef(new Date(Date.now() - 24 * 60 * 60 * 1000))
+  const { events } = useNostrEvents({
+    filter: {
+      since: dateToUnix(now.current), // all new events from now
+      kinds: [1],
+      "#t": ["ordinals", "bitcoin", "nft", "nostr"],
+      limit: 10,
+    },
+    // enabled: true,
+  })
+
+  const [ago, setAgo] = useState<Date | undefined>(undefined)
   const [appInfo, setAppInfo] = useState<GetSnapsResponse[string] | undefined>(
     undefined,
   )
@@ -124,7 +277,7 @@ export function Intro() {
   }
 
   const getSatsDomainInfo = async () => {
-    const ad = await snapIdentity?.api.ord.getSatsDomainInfo(queryDomain)
+    const ad = await snapIdentity?.api.ord.getSatsDomainInfo(queryDomain!)
     console.log(ad)
   }
 
@@ -195,6 +348,7 @@ export function Intro() {
   return (
     <>
       <header className="App-header">
+        <Demo feed={events} />
         <img src={logo} className="App-logo" alt="logo" />
         <p style={{ fontSize: "2em", marginBottom: "0.5em" }}>
           OrdSnap: Bitcoin in MetaMask
@@ -535,6 +689,28 @@ export function Intro() {
               <p>{messageDecrypted}</p>
             </div>
           ) : null}
+          <>
+            {events.map((event) => (
+              <div
+                key={event.id}
+                style={{ margin: 16, borderBottom: "1px solid #333" }}
+              >
+                <ProfileWidget pubkey={event.pubkey} />
+                <p
+                  style={{
+                    wordBreak: "break-all",
+                    width: "100%",
+                  }}
+                >
+                  {/* <ReactTimeAgo
+                    date={new Date(event.created_at)}
+                    locale="en-US"
+                  /> */}
+                  <div style={{ fontSize: 16 }}>{event.content}</div>
+                </p>
+              </div>
+            ))}
+          </>
         </div>
 
         <p style={{ fontSize: "0.6em" }}>Documentations are WIP</p>

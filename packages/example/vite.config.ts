@@ -73,6 +73,9 @@ export default defineConfig({
       ...aliases,
     },
   },
+  build: {
+    target: ["esnext"],
+  },
   server: {
     fs: {
       allow: ["."],
