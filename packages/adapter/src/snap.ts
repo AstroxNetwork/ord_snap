@@ -147,5 +147,8 @@ export function injectWindow(api: OrdSnapApi): void {
     if (window.nostr === undefined) {
       window.nostr = api.nostr;
     }
+    if (window.ord === undefined) {
+      window.ord = api.ord;
+    }
   }
 }
