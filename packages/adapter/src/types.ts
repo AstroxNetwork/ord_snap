@@ -10,5 +10,6 @@ declare global {
       on: (eventName: unknown, callback: unknown) => unknown;
     };
     nostr: OrdSnapApi['nostr'];
+    ord: OrdSnapApi['ord'];
   }
 }

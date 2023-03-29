@@ -143,7 +143,9 @@ export async function enableOrdSnap(
 }
 
 export function injectWindow(api: OrdSnapApi): void {
-  if (typeof window !== 'undefined' && window.nostr === undefined) {
-    window.nostr = api.nostr;
+  if (typeof window !== 'undefined') {
+    if (window.nostr === undefined) {
+      window.nostr = api.nostr;
+    }
   }
 }
